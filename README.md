@@ -13,6 +13,8 @@ The retail commodity and resource investment sector suffers from fragmented, arc
 1.2 The Solution
 ResourceMarketCap combines a modern, real-time analytics web dashboard with an integrated content media brand (X/Twitter + Reddit).
 
+```
+
                               ┌─────────────────────────────────────────┐
                               │       MEDIA BRAND & AUDIENCE FUNNEL     │
                               │  X/Twitter (Highlights) / Reddit (Deep) │
@@ -31,6 +33,7 @@ ResourceMarketCap combines a modern, real-time analytics web dashboard with an i
                                │      MONETIZATION & VALUE CAPTURE       │
                                │  Sponsorships, Mining Leads, Pro Tools  │
                                └─────────────────────────────────────────┘
+```
 
 2. Platform Architecture & Categorization Schema
 2.1 UI Categorization Framework
@@ -51,10 +54,9 @@ Developers: Near-production assets with completed Feasibility Studies (FS) or Pr
 
 Explorers / Juniors: High-risk drill target plays with NI 43-101 / JORC resource estimates.
 
-
-
 3. Technology Stack & Tooling Strategy
 
+```
 ┌─────────────────────────────────────────────────────────────────────────────────────────┐
 │                                FRONTEND UI LAYER                                        │
 │  - Next.js (App Router, TypeScript)                                                     │
@@ -76,7 +78,7 @@ Explorers / Juniors: High-risk drill target plays with NI 43-101 / JORC resource
 │  - Google Gemini API (Gemini 2.5/3 PDF Vision)                                          │
 │  - Pydantic Data Models (Strict JSON Enforcement)                                       │
 └─────────────────────────────────────────────────────────────────────────────────────────┘
-
+```
 
 ## 3. Technology Stack & Tooling Strategy
 
@@ -101,7 +103,7 @@ Explorers / Juniors: High-risk drill target plays with NI 43-101 / JORC resource
 ### 5.1 Architecture & Workflow
 Quarterly corporate reports (10-Q/10-K, investor presentations, technical reports) are automatically processed without manual data entry
 
-
+```
 ┌────────────────────────┐      ┌────────────────────────┐      ┌────────────────────────┐
 │ Quarterly Corporate    │ ───► │ Python Script Calls    │ ───► │ Structured JSON Data   │
 │ PDF Filings            │      │ Gemini 2.5/3 API       │      │ (AISC, NAV, Reserves)  │
@@ -111,7 +113,7 @@ Quarterly corporate reports (10-Q/10-K, investor presentations, technical report
 │ Next.js Dashboard UI   │ ◄─── │ Supabase Postgres DB   │ ◄────────────────┘
 │ Updates Automatically  │      │ Auto-Saves Extracted   │
 └────────────────────────┘      └────────────────────────┘
-
+```
 
 ### 5.2 Implementation Code (`scripts/extract_quarterly_data.py`)
 
@@ -183,6 +185,7 @@ Markdown
 
 7. Media Strategy & Monetization Roadmap
 
+```
 ┌─────────────────────────────────────────────────────────────────────────┐
 │                          AUDIENCE ACQUISITION                           │
 │  - X / Twitter: Daily macro commentary, ticker infographics, AISC charts │
@@ -202,6 +205,8 @@ Markdown
 │  - Tier 2: Affiliate & Lead Generation for Physical Trusts / Brokers    │
 │  - Tier 3: Pro Subscription (Custom Screener, Gemini AI Alerts, API)    │
 └─────────────────────────────────────────────────────────────────────────┘
+```
+
 
 8. Immediate Implementation Checklist
 
