@@ -1,8 +1,14 @@
 # ResourceBook
-A public website for Natural resources analysis
+A public website for natural resources analysis
+
+> **MVP plan (source of truth):** see [`PLAN.md`](./PLAN.md) — locked product decisions, IA, data architecture, schema, and build order for the Gold Hub dashboard.
+
+The sections below are earlier architecture brainstorm notes (some names and details are superseded by `PLAN.md`).
+
+---
 
 Project Master Requirements & Architecture Document
-Project Name: ResourceMarketCap (Commodity Investment Channel & Analytics Dashboard)
+Project Name: ResourceBook (formerly drafted as ResourceMarketCap)
 
 Document Purpose: Comprehensive Master Requirements, Architecture Specifications, Tech Stack Decisions, and Operational Workflows.
 
@@ -11,7 +17,7 @@ Document Purpose: Comprehensive Master Requirements, Architecture Specifications
 The retail commodity and resource investment sector suffers from fragmented, archaic, and difficult-to-navigate data platforms (e.g., outdated TSX/SEDAR/EDGAR interfaces). Younger, macro-focused investors looking to allocate capital into hard assets (Gold, Silver, Uranium, Copper, Lithium) lack a sleek, modern UI comparable to platforms like CoinMarketCap or CoinGecko.
 
 1.2 The Solution
-ResourceMarketCap combines a modern, real-time analytics web dashboard with an integrated content media brand (X/Twitter + Reddit).
+ResourceBook combines a modern analytics web dashboard with an integrated content media brand (X/Twitter + Reddit).
 
 ```
 
