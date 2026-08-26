@@ -22,10 +22,10 @@ export default function HomePage() {
         {/* Soft atmospheric background (not a flat single color) */}
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,_rgba(217,119,6,0.18),_transparent_55%),linear-gradient(to_bottom,_var(--background),_var(--surface))]"
+          className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,_color-mix(in_oklab,var(--accent)_18%,transparent),_transparent_55%),linear-gradient(to_bottom,_var(--background),_var(--surface))]"
         />
         <div className="relative mx-auto flex min-h-[70vh] max-w-6xl flex-col justify-center px-4 py-20">
-          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-amber-700 dark:text-amber-400">
+          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-accent-fg">
             ResourceBook
           </p>
           <h1 className="mt-4 max-w-2xl text-4xl font-semibold tracking-tight text-zinc-900 sm:text-5xl dark:text-zinc-50">
@@ -39,7 +39,7 @@ export default function HomePage() {
           <div className="mt-8 flex flex-wrap gap-3">
             <Link
               href="/gold"
-              className="rounded-md bg-amber-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-amber-500"
+              className="rounded-md bg-accent-solid px-5 py-2.5 text-sm font-semibold text-white hover:bg-accent-solid-hover"
             >
               Explore Gold
             </Link>
@@ -114,7 +114,7 @@ export default function HomePage() {
         </p>
         <Link
           href="/gold"
-          className="mt-6 inline-flex rounded-md bg-amber-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-amber-500"
+          className="mt-6 inline-flex rounded-md bg-accent-solid px-5 py-2.5 text-sm font-semibold text-white hover:bg-accent-solid-hover"
         >
           Open Gold Overview
         </Link>

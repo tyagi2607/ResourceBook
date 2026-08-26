@@ -4,6 +4,29 @@ Chronological record of what we implemented. Newest entries at the top.
 
 ---
 
+## 2026-08-25 — Commodity-specific accent colors
+
+**Goal:** Keep the minimal Gold accent pattern, but give each commodity its own muted hue.
+
+### Shipped
+
+- CSS variable palettes in `globals.css` for gold, silver, copper, uranium, oil, gas, battery-metals
+- `CommodityScope` + `gold/layout.tsx` so Gold pages inherit gold accents
+- Stub pages use their own commodity color for “Coming soon” label
+- Top-nav active pills color by commodity (`data-slug`)
+- Replaced hard-coded `amber-*` classes with `text-accent-fg`, `border-accent-border`, `bg-accent-solid`
+- Doc: `docs/04-commodity-colors.md`
+
+### How to review
+
+```powershell
+npm run dev
+```
+
+Visit `/gold` (gold accents), `/silver` (silver), `/copper`, `/uranium`, `/oil`, `/gas` and confirm the top-nav active pill matches each hub.
+
+---
+
 ## 2026-08-25 — Step 1: App shell scaffold
 
 **Goal:** Runnable Next.js portal with Home, Gold routes, commodity stubs, theme, and simple Gold dropdown.

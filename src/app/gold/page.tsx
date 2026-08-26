@@ -1,8 +1,8 @@
 /**
  * Gold Overview — `/gold`
  *
- * Scaffold step: page chrome + clear placeholders for stats, TradingView,
- * narrative, and leaderboards (wired to real data in later build steps).
+ * Accents come from the parent gold/layout.tsx (data-commodity="gold").
+ * Use text-accent-fg / hover:border-accent-border — not hard-coded amber.
  */
 
 import Link from "next/link";
@@ -18,9 +18,7 @@ export const metadata: Metadata = {
 export default function GoldOverviewPage() {
   return (
     <div className="mx-auto max-w-6xl px-4 py-10">
-      <p className="text-sm font-medium text-amber-700 dark:text-amber-400">
-        Gold hub
-      </p>
+      <p className="text-sm font-medium text-accent-fg">Gold hub</p>
       <h1 className="mt-1 text-3xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-50">
         Overview
       </h1>
@@ -29,13 +27,12 @@ export default function GoldOverviewPage() {
         leaderboards land in the next build steps — structure first.
       </p>
 
-      {/* Quick links matching the hover menu */}
       <ul className="mt-8 grid gap-3 sm:grid-cols-3">
         {GOLD_NAV_LINKS.map((link) => (
           <li key={link.href}>
             <Link
               href={link.href}
-              className="block rounded-lg border border-border bg-surface p-4 hover:border-amber-500/40"
+              className="block rounded-lg border border-border bg-surface p-4 transition hover:border-accent-border"
             >
               <span className="font-medium text-zinc-900 dark:text-zinc-50">
                 {link.label}
@@ -48,15 +45,20 @@ export default function GoldOverviewPage() {
         ))}
       </ul>
 
-      {/* Placeholder blocks so you can see the planned layout */}
       <div className="mt-10 space-y-6">
-        <Placeholder title="Stats bar" note="Spot, 24h change, 52-week range — from Supabase after Yahoo ETL" />
+        <Placeholder
+          title="Stats bar"
+          note="Spot, 24h change, 52-week range — from Supabase after Yahoo ETL"
+        />
         <Placeholder title="TradingView chart" note="Gold spot / futures embed" />
         <Placeholder
           title="Why Gold / tailwinds"
           note="Central banks, deficits, geopolitics, real rates"
         />
-        <Placeholder title="Leaderboards" note="Top movers + AISC preview from DB" />
+        <Placeholder
+          title="Leaderboards"
+          note="Top movers + AISC preview from DB"
+        />
       </div>
     </div>
   );

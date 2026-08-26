@@ -12,7 +12,7 @@ export function SiteFooter() {
           <span className="font-medium text-zinc-800 dark:text-zinc-200">
             ResourceBook
           </span>
-          <Link href="/gold" className="hover:text-amber-700 dark:hover:text-amber-300">
+          <Link href="/gold" className="hover:text-accent-fg">
             Explore Gold
           </Link>
         </div>

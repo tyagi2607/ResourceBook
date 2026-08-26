@@ -23,9 +23,7 @@ const TABS = [
 export default function GoldCompaniesPage() {
   return (
     <div className="mx-auto max-w-6xl px-4 py-10">
-      <p className="text-sm font-medium text-amber-700 dark:text-amber-400">
-        Gold hub
-      </p>
+      <p className="text-sm font-medium text-accent-fg">Gold hub</p>
       <h1 className="mt-1 text-3xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-50">
         Companies — Equities &amp; Miner ETFs
       </h1>

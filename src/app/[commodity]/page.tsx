@@ -8,6 +8,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ComingSoonStub } from "@/components/ComingSoonStub";
+import { isCommodityThemeId } from "@/lib/commodity-theme";
 import { COMMODITIES, getCommodityBySlug } from "@/lib/commodities";
 
 type PageProps = {
@@ -39,10 +40,14 @@ export default async function CommodityStubPage({ params }: PageProps) {
   const { commodity: slug } = await params;
   const commodity = getCommodityBySlug(slug);
 
-  // Unknown slug or someone hitting /gold via this route -> 404
-  if (!commodity || commodity.slug === "gold") {
+  // Unknown slug, gold (handled elsewhere), or missing theme → 404
+  if (
+    !commodity ||
+    commodity.slug === "gold" ||
+    !isCommodityThemeId(commodity.slug)
+  ) {
     notFound();
   }
 
-  return <ComingSoonStub title={commodity.label} />;
+  return <ComingSoonStub title={commodity.label} slug={commodity.slug} />;
 }

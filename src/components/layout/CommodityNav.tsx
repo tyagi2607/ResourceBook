@@ -11,7 +11,10 @@
  * - Hover "Gold"     -> show a SINGLE list of Gold pages (not a mega-menu)
  * - Other commodities -> go to stub pages ("Coming soon")
  *
- * Mobile: hover does not work well, so we use a tap-to-expand pattern for Gold.
+ * COLORING
+ * --------
+ * Active nav pill uses that commodity’s accent (gold pill on /gold, silver
+ * pill on /silver, etc.) via CSS class .commodity-nav-pill + data-slug.
  */
 
 import Link from "next/link";
@@ -56,19 +59,18 @@ export function CommodityNav() {
                 key={commodity.slug}
                 ref={goldRef}
                 className="relative"
-                // Desktop: open on hover
                 onMouseEnter={() => setGoldOpen(true)}
                 onMouseLeave={() => setGoldOpen(false)}
               >
                 <div className="flex items-center">
-                  {/* Clicking the label always goes to Overview */}
                   <Link
                     href="/gold"
+                    data-slug={commodity.slug}
+                    data-active={isActive ? "true" : "false"}
                     className={navLinkClass(isActive)}
                   >
                     {commodity.label}
                   </Link>
-                  {/* Chevron: helpful on mobile to expand the list without navigating */}
                   <button
                     type="button"
                     className="ml-0.5 rounded p-1 text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800"
@@ -108,11 +110,12 @@ export function CommodityNav() {
             );
           }
 
-          // Non-gold: simple link to stub hub
           return (
             <li key={commodity.slug}>
               <Link
                 href={`/${commodity.slug}`}
+                data-slug={commodity.slug}
+                data-active={isActive ? "true" : "false"}
                 className={navLinkClass(isActive)}
               >
                 {commodity.label}
@@ -125,12 +128,15 @@ export function CommodityNav() {
   );
 }
 
-/** Shared styles for top-nav commodity links. */
+/**
+ * Base pill styles. When active, .commodity-nav-pill[data-active=true] in
+ * globals.css applies that commodity’s soft fill + foreground color.
+ */
 function navLinkClass(active: boolean): string {
   return [
-    "rounded-md px-2 py-1.5 text-sm font-medium transition",
+    "commodity-nav-pill rounded-md px-2 py-1.5 text-sm font-medium transition",
     active
-      ? "bg-amber-500/15 text-amber-800 dark:text-amber-300"
+      ? ""
       : "text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-zinc-800",
   ].join(" ");
 }
