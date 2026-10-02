@@ -1,0 +1,13 @@
+symbol,ticker,commodity_slug,name,issuer,structure,exchange,country,currency,expense_ratio,vault_location,physical_redemption,website,notes
+GLD,GLD,gold,SPDR Gold Shares,State Street Global Advisors,etf,NYSE Arca,US,USD,0.0040,London,false,https://www.spdrgoldshares.com/,High liquidity tier
+IAU,IAU,gold,iShares Gold Trust,BlackRock iShares,etf,NYSE Arca,US,USD,0.0025,"Multiple (London, New York, Toronto)",false,https://www.ishares.com/,High liquidity tier
+GLDM,GLDM,gold,SPDR Gold MiniShares Trust,State Street Global Advisors,etf,NYSE Arca,US,USD,0.0010,London,false,https://www.spdrgoldshares.com/,Low-fee DCA tier
+IAUM,IAUM,gold,iShares Gold Trust Micro,BlackRock iShares,etf,NYSE Arca,US,USD,0.0009,"Multiple (London, New York, Toronto)",false,https://www.ishares.com/,Low-fee DCA tier
+SGOL,SGOL,gold,abrdn Physical Gold Shares ETF,abrdn,etf,NYSE Arca,US,USD,0.0017,"London, Zurich",false,https://www.abrdn.com/,
+BAR,BAR,gold,GraniteShares Gold Trust,GraniteShares,etf,NYSE Arca,US,USD,0.0017,London,false,https://graniteshares.com/,
+PHYS,PHYS,gold,Sprott Physical Gold Trust,Sprott Asset Management,trust,NYSE Arca,US,USD,0.0041,Royal Canadian Mint (Ottawa),true,https://sprott.com/,Physical redemption tier; expense ratio is MER - verify
+PHYS.TO,PHYS,gold,Sprott Physical Gold Trust,Sprott Asset Management,trust,TSX,CA,CAD,0.0041,Royal Canadian Mint (Ottawa),true,https://sprott.com/,CAD listing of PHYS; expense ratio is MER - verify
+CGL-C.TO,CGL.C,gold,iShares Gold Bullion ETF (Non-Hedged),BlackRock iShares Canada,etf,TSX,CA,CAD,,,false,https://www.blackrock.com/ca,Verify expense ratio and vault
+MNT.TO,MNT,gold,Royal Canadian Mint Canadian Gold Reserves ETR,Royal Canadian Mint,receipt,TSX,CA,CAD,0.0035,Royal Canadian Mint (Ottawa),true,https://www.mint.ca/,Exchange-traded receipts; verify fee
+KILO.TO,KILO,gold,Purpose Gold Bullion Fund,Purpose Investments,etf,TSX,CA,CAD,,,false,https://www.purposeinvest.com/,Verify expense ratio and vault
+ZGLD.TO,ZGLD,gold,BMO Gold Bullion ETF,BMO Global Asset Management,etf,TSX,CA,CAD,,,false,https://www.bmo.com/gam/ca,Verify expense ratio and vault

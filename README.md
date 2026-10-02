@@ -2,6 +2,17 @@
 A public website for natural resources analysis
 
 > **MVP plan (source of truth):** see [`PLAN.md`](./PLAN.md) — locked product decisions, IA, data architecture, schema, and build order for the Gold Hub dashboard.
+>
+> **How to run & learn the codebase:** see [`docs/README.md`](./docs/README.md).
+
+## Quick start
+
+```powershell
+npm install
+npm run dev
+```
+
+Open [http://localhost:3000](http://localhost:3000).
 
 The sections below are earlier architecture brainstorm notes (some names and details are superseded by `PLAN.md`).
 

@@ -1,0 +1,288 @@
+@import "tailwindcss";
+
+/*
+  ResourceBook design tokens
+  --------------------------
+  CSS variables let us theme the whole app from one place.
+  Light values live on :root; dark values live on .dark (set by ThemeProvider).
+
+  Commodity accents:
+  - Set data-commodity="gold" (etc.) on a page wrapper
+  - That overrides --accent* for that section only
+  - Nav pills use the same tokens via .commodity-nav-pill[data-slug="..."]
+
+  Tailwind v4: `@custom-variant dark` makes `dark:` utilities follow the
+  `.dark` class on <html> instead of only the OS preference.
+*/
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  --background: #fafafa;
+  --foreground: #18181b;
+  --muted: #71717a;
+  --surface: #ffffff;
+  --border: #e4e4e7;
+
+  /*
+    Default accent = Gold (featured MVP commodity on Home / shared CTAs).
+    Hue kept muted — same “soft professional” feel as the original amber.
+  */
+  --accent: #a16207; /* gold */
+  --accent-fg: #854d0e;
+  --accent-soft: color-mix(in oklab, #a16207 14%, transparent);
+  --accent-border: color-mix(in oklab, #a16207 40%, transparent);
+  --accent-solid: #a16207;
+  --accent-solid-hover: #ca8a04;
+}
+
+.dark {
+  --background: #09090b;
+  --foreground: #fafafa;
+  --muted: #a1a1aa;
+  --surface: #18181b;
+  --border: #27272a;
+
+  --accent: #eab308;
+  --accent-fg: #facc15;
+  --accent-soft: color-mix(in oklab, #eab308 18%, transparent);
+  --accent-border: color-mix(in oklab, #eab308 45%, transparent);
+  --accent-solid: #ca8a04;
+  --accent-solid-hover: #eab308;
+}
+
+/*
+  ---------------------------------------------------------------------------
+  Per-commodity palettes (light)
+  Same structure, different hue — keep saturation low for a minimal look.
+  ---------------------------------------------------------------------------
+*/
+
+[data-commodity="gold"] {
+  --accent: #a16207;
+  --accent-fg: #854d0e;
+  --accent-soft: color-mix(in oklab, #a16207 14%, transparent);
+  --accent-border: color-mix(in oklab, #a16207 40%, transparent);
+  --accent-solid: #a16207;
+  --accent-solid-hover: #ca8a04;
+}
+
+/* Cool metallic silver — slate, not pure gray */
+[data-commodity="silver"] {
+  --accent: #64748b;
+  --accent-fg: #475569;
+  --accent-soft: color-mix(in oklab, #64748b 14%, transparent);
+  --accent-border: color-mix(in oklab, #64748b 40%, transparent);
+  --accent-solid: #64748b;
+  --accent-solid-hover: #94a3b8;
+}
+
+/* Metallic copper — warm orange-brown, quieter than neon orange */
+[data-commodity="copper"] {
+  --accent: #c2410c;
+  --accent-fg: #9a3412;
+  --accent-soft: color-mix(in oklab, #c2410c 14%, transparent);
+  --accent-border: color-mix(in oklab, #c2410c 40%, transparent);
+  --accent-solid: #c2410c;
+  --accent-solid-hover: #ea580c;
+}
+
+/* Isotope green — muted lime/olive, not neon radioactive */
+[data-commodity="uranium"] {
+  --accent: #4d7c0f;
+  --accent-fg: #3f6212;
+  --accent-soft: color-mix(in oklab, #4d7c0f 14%, transparent);
+  --accent-border: color-mix(in oklab, #4d7c0f 40%, transparent);
+  --accent-solid: #4d7c0f;
+  --accent-solid-hover: #65a30d;
+}
+
+/* Crude amber — deeper brown-amber than gold so the two stay distinct */
+[data-commodity="oil"] {
+  --accent: #92400e;
+  --accent-fg: #78350f;
+  --accent-soft: color-mix(in oklab, #92400e 14%, transparent);
+  --accent-border: color-mix(in oklab, #92400e 40%, transparent);
+  --accent-solid: #92400e;
+  --accent-solid-hover: #b45309;
+}
+
+/* Methane blue — calm sky/steel blue */
+[data-commodity="gas"] {
+  --accent: #0369a1;
+  --accent-fg: #075985;
+  --accent-soft: color-mix(in oklab, #0369a1 14%, transparent);
+  --accent-border: color-mix(in oklab, #0369a1 40%, transparent);
+  --accent-solid: #0369a1;
+  --accent-solid-hover: #0284c7;
+}
+
+/* Battery metals — muted cobalt (user did not specify; kept quiet) */
+[data-commodity="battery-metals"] {
+  --accent: #4338ca;
+  --accent-fg: #3730a3;
+  --accent-soft: color-mix(in oklab, #4338ca 14%, transparent);
+  --accent-border: color-mix(in oklab, #4338ca 40%, transparent);
+  --accent-solid: #4338ca;
+  --accent-solid-hover: #4f46e5;
+}
+
+/*
+  Dark-mode tweaks: slightly brighter accents for contrast on zinc-950.
+*/
+.dark [data-commodity="gold"] {
+  --accent: #eab308;
+  --accent-fg: #facc15;
+  --accent-soft: color-mix(in oklab, #eab308 18%, transparent);
+  --accent-border: color-mix(in oklab, #eab308 45%, transparent);
+  --accent-solid: #ca8a04;
+  --accent-solid-hover: #eab308;
+}
+
+.dark [data-commodity="silver"] {
+  --accent: #94a3b8;
+  --accent-fg: #cbd5e1;
+  --accent-soft: color-mix(in oklab, #94a3b8 18%, transparent);
+  --accent-border: color-mix(in oklab, #94a3b8 45%, transparent);
+  --accent-solid: #64748b;
+  --accent-solid-hover: #94a3b8;
+}
+
+.dark [data-commodity="copper"] {
+  --accent: #fb923c;
+  --accent-fg: #fdba74;
+  --accent-soft: color-mix(in oklab, #fb923c 18%, transparent);
+  --accent-border: color-mix(in oklab, #fb923c 45%, transparent);
+  --accent-solid: #ea580c;
+  --accent-solid-hover: #fb923c;
+}
+
+.dark [data-commodity="uranium"] {
+  --accent: #a3e635;
+  --accent-fg: #bef264;
+  --accent-soft: color-mix(in oklab, #a3e635 18%, transparent);
+  --accent-border: color-mix(in oklab, #a3e635 45%, transparent);
+  --accent-solid: #65a30d;
+  --accent-solid-hover: #84cc16;
+}
+
+.dark [data-commodity="oil"] {
+  --accent: #f59e0b;
+  --accent-fg: #fbbf24;
+  --accent-soft: color-mix(in oklab, #f59e0b 18%, transparent);
+  --accent-border: color-mix(in oklab, #f59e0b 45%, transparent);
+  --accent-solid: #d97706;
+  --accent-solid-hover: #f59e0b;
+}
+
+.dark [data-commodity="gas"] {
+  --accent: #38bdf8;
+  --accent-fg: #7dd3fc;
+  --accent-soft: color-mix(in oklab, #38bdf8 18%, transparent);
+  --accent-border: color-mix(in oklab, #38bdf8 45%, transparent);
+  --accent-solid: #0284c7;
+  --accent-solid-hover: #38bdf8;
+}
+
+.dark [data-commodity="battery-metals"] {
+  --accent: #818cf8;
+  --accent-fg: #a5b4fc;
+  --accent-soft: color-mix(in oklab, #818cf8 18%, transparent);
+  --accent-border: color-mix(in oklab, #818cf8 45%, transparent);
+  --accent-solid: #4f46e5;
+  --accent-solid-hover: #818cf8;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-surface: var(--surface);
+  --color-border: var(--border);
+  --color-accent: var(--accent);
+  --color-accent-fg: var(--accent-fg);
+  --color-accent-soft: var(--accent-soft);
+  --color-accent-border: var(--accent-border);
+  --color-accent-solid: var(--accent-solid);
+  --color-accent-solid-hover: var(--accent-solid-hover);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), system-ui, sans-serif;
+}
+
+/*
+  Top-nav active pill: each commodity link carries data-slug + data-active.
+  When active, it paints with THAT commodity’s soft fill + foreground text.
+*/
+.commodity-nav-pill[data-active="true"] {
+  background: var(--nav-pill-soft);
+  color: var(--nav-pill-fg);
+}
+
+.commodity-nav-pill[data-slug="gold"] {
+  --nav-pill-soft: color-mix(in oklab, #a16207 14%, transparent);
+  --nav-pill-fg: #854d0e;
+}
+.dark .commodity-nav-pill[data-slug="gold"] {
+  --nav-pill-soft: color-mix(in oklab, #eab308 18%, transparent);
+  --nav-pill-fg: #facc15;
+}
+
+.commodity-nav-pill[data-slug="silver"] {
+  --nav-pill-soft: color-mix(in oklab, #64748b 14%, transparent);
+  --nav-pill-fg: #475569;
+}
+.dark .commodity-nav-pill[data-slug="silver"] {
+  --nav-pill-soft: color-mix(in oklab, #94a3b8 18%, transparent);
+  --nav-pill-fg: #cbd5e1;
+}
+
+.commodity-nav-pill[data-slug="copper"] {
+  --nav-pill-soft: color-mix(in oklab, #c2410c 14%, transparent);
+  --nav-pill-fg: #9a3412;
+}
+.dark .commodity-nav-pill[data-slug="copper"] {
+  --nav-pill-soft: color-mix(in oklab, #fb923c 18%, transparent);
+  --nav-pill-fg: #fdba74;
+}
+
+.commodity-nav-pill[data-slug="uranium"] {
+  --nav-pill-soft: color-mix(in oklab, #4d7c0f 14%, transparent);
+  --nav-pill-fg: #3f6212;
+}
+.dark .commodity-nav-pill[data-slug="uranium"] {
+  --nav-pill-soft: color-mix(in oklab, #a3e635 18%, transparent);
+  --nav-pill-fg: #bef264;
+}
+
+.commodity-nav-pill[data-slug="oil"] {
+  --nav-pill-soft: color-mix(in oklab, #92400e 14%, transparent);
+  --nav-pill-fg: #78350f;
+}
+.dark .commodity-nav-pill[data-slug="oil"] {
+  --nav-pill-soft: color-mix(in oklab, #f59e0b 18%, transparent);
+  --nav-pill-fg: #fbbf24;
+}
+
+.commodity-nav-pill[data-slug="gas"] {
+  --nav-pill-soft: color-mix(in oklab, #0369a1 14%, transparent);
+  --nav-pill-fg: #075985;
+}
+.dark .commodity-nav-pill[data-slug="gas"] {
+  --nav-pill-soft: color-mix(in oklab, #38bdf8 18%, transparent);
+  --nav-pill-fg: #7dd3fc;
+}
+
+.commodity-nav-pill[data-slug="battery-metals"] {
+  --nav-pill-soft: color-mix(in oklab, #4338ca 14%, transparent);
+  --nav-pill-fg: #3730a3;
+}
+.dark .commodity-nav-pill[data-slug="battery-metals"] {
+  --nav-pill-soft: color-mix(in oklab, #818cf8 18%, transparent);
+  --nav-pill-fg: #a5b4fc;
+}

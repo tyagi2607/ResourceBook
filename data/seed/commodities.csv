@@ -1,0 +1,8 @@
+slug,name,status,spot_symbol,price_unit
+gold,Gold,live,GC=F,USD/oz
+silver,Silver,coming_soon,SI=F,USD/oz
+copper,Copper,coming_soon,HG=F,USD/lb
+uranium,Uranium,coming_soon,,USD/lb
+oil,Oil,coming_soon,CL=F,USD/bbl
+gas,Natural Gas,coming_soon,NG=F,USD/MMBtu
+battery-metals,Battery Metals,coming_soon,,

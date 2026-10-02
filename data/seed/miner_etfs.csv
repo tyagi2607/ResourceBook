@@ -1,0 +1,10 @@
+symbol,ticker,commodity_slug,name,issuer,focus,exchange,country,currency,expense_ratio,holdings_summary,website,notes
+GDX,GDX,gold,VanEck Gold Miners ETF,VanEck,majors,NYSE Arca,US,USD,0.0051,Large and mid-cap global gold miners,https://www.vaneck.com/,
+GDXJ,GDXJ,gold,VanEck Junior Gold Miners ETF,VanEck,juniors,NYSE Arca,US,USD,0.0051,Small and mid-cap gold miners,https://www.vaneck.com/,
+RING,RING,gold,iShares MSCI Global Gold Miners ETF,BlackRock iShares,majors,NASDAQ,US,USD,0.0039,Global gold mining companies,https://www.ishares.com/,
+SGDM,SGDM,gold,Sprott Gold Miners ETF,Sprott Asset Management,majors,NYSE Arca,US,USD,0.0050,Gold miners selected by revenue growth and balance sheet,https://sprott.com/,
+SGDJ,SGDJ,gold,Sprott Junior Gold Miners ETF,Sprott Asset Management,juniors,NYSE Arca,US,USD,0.0050,Junior gold miners,https://sprott.com/,
+GOEX,GOEX,gold,Global X Gold Explorers ETF,Global X,explorers,NYSE Arca,US,USD,0.0065,Gold exploration companies,https://www.globalxetfs.com/,
+XGD.TO,XGD,gold,iShares S&P/TSX Global Gold Index ETF,BlackRock iShares Canada,majors,TSX,CA,CAD,0.0061,Global gold producers in the S&P/TSX Global Gold Index,https://www.blackrock.com/ca,Verify expense ratio
+ZGD.TO,ZGD,gold,BMO Equal Weight Global Gold Index ETF,BMO Global Asset Management,broad,TSX,CA,CAD,,Equal-weight global gold miners,https://www.bmo.com/gam/ca,Verify expense ratio
+ZJG.TO,ZJG,gold,BMO Junior Gold Index ETF,BMO Global Asset Management,juniors,TSX,CA,CAD,,Junior gold miners,https://www.bmo.com/gam/ca,Verify expense ratio

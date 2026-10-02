@@ -1,0 +1,16 @@
+symbol,ticker,commodity_slug,name,tier,exchange,country,currency,hq_country,primary_asset,asset_location,jurisdiction_risk,study_stage,website,notes
+FNV,FNV,gold,Franco-Nevada Corporation,royalty,NYSE,US,USD,Canada,Diversified royalty and stream portfolio,Global,Tier 1,,https://www.franco-nevada.com/,
+WPM,WPM,gold,Wheaton Precious Metals Corp.,royalty,NYSE,US,USD,Canada,Diversified stream portfolio,Global,Tier 1,,https://www.wheatonpm.com/,
+RGLD,RGLD,gold,Royal Gold Inc.,royalty,NASDAQ,US,USD,United States,Diversified royalty and stream portfolio,Global,Tier 1,,https://www.royalgold.com/,
+OR,OR,gold,OR Royalties Inc.,royalty,NYSE,US,USD,Canada,Diversified royalty portfolio (Canadian Malartic royalty),Global,Tier 1,,https://www.orroyalties.com/,Formerly Osisko Gold Royalties - verify name and website
+NEM,NEM,gold,Newmont Corporation,producer,NYSE,US,USD,United States,Global mine portfolio,Global,Tier 1,,https://www.newmont.com/,
+AEM,AEM,gold,Agnico Eagle Mines Limited,producer,NYSE,US,USD,Canada,"Mines in Canada, Australia, Finland, Mexico",Canada / Australia / Finland / Mexico,Tier 1,,https://www.agnicoeagle.com/,
+B,B,gold,Barrick Mining Corporation,producer,NYSE,US,USD,Canada,Global mine portfolio,Global,Tier 2,,https://www.barrick.com/,NYSE ticker changed from GOLD to B in 2025 - verify
+KGC,KGC,gold,Kinross Gold Corporation,producer,NYSE,US,USD,Canada,"Mines in the Americas and West Africa",Americas / West Africa,Tier 2,,https://www.kinross.com/,
+PPTA,PPTA,gold,Perpetua Resources Corp.,developer,NASDAQ,US,USD,United States,Stibnite Gold Project,"Idaho, USA",Tier 1,FS,https://perpetuaresources.com/,
+SA,SA,gold,Seabridge Gold Inc.,developer,NYSE,US,USD,Canada,KSM Project,"British Columbia, Canada",Tier 1,PFS,https://www.seabridgegold.com/,
+ODV,ODV,gold,Osisko Development Corp.,developer,NYSE,US,USD,Canada,Cariboo Gold Project,"British Columbia, Canada",Tier 1,FS,https://osiskodev.com/,
+SKE,SKE,gold,Skeena Resources Limited,developer,NYSE,US,USD,Canada,Eskay Creek,"British Columbia, Canada",Tier 1,FS,https://skeenaresources.com/,In construction - may move to producer tier; verify
+SGD.V,SGD,gold,Snowline Gold Corp.,explorer,TSXV,CA,CAD,Canada,Rogue Project (Valley deposit),"Yukon, Canada",Tier 1,,https://snowlinegold.com/,
+BYN.V,BYN,gold,Banyan Gold Corp.,explorer,TSXV,CA,CAD,Canada,AurMac Project,"Yukon, Canada",Tier 1,,https://www.banyangold.com/,
+FURY,FURY,gold,Fury Gold Mines Limited,explorer,NYSE American,US,USD,Canada,Eau Claire,"Quebec, Canada",Tier 1,,https://furygoldmines.com/,
