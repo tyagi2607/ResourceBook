@@ -271,7 +271,7 @@ Same header + simple dropdown; body: coming soon + CTA to Gold / Home.
 ## 7. Build order
 
 1. ~~Scaffold — theme, header, click + simple hover dropdown, stubs~~ **Done (2026-08-25)** — see `docs/BUILD_LOG.md`
-2. Supabase schema — current + daily history tables + gold seed CSV
+2. ~~Supabase schema — current + daily history tables + gold seed CSV~~ **Built (2026-10-01)** — see `docs/05-database-setup.md`
 3. Home `/` polish (content already scaffolded; iterate with design)
 4. `/gold` overview — stats, TradingView, narrative, leaderboards
 5. `/gold/physical` — CA/US filter, metal ETF table, dealers, history chart

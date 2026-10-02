@@ -4,6 +4,43 @@ Chronological record of what we implemented. Newest entries at the top.
 
 ---
 
+## 2026-10-01 — Step 2: Supabase schema + seed data
+
+**Goal:** Database ready to hold current values and daily history, with starter Gold data
+and the app able to read it.
+
+### Shipped
+
+- Schema migration `supabase/migrations/20261002000000_initial_schema.sql`
+  - 5 current-state tables: `commodities`, `vehicles`, `miner_etfs`, `companies`, `dealers`
+  - 5 history tables: `commodity_daily`, `vehicle_daily`, `miner_etf_daily`, `company_daily`,
+    `company_fundamentals_history`
+  - `premium_discount_pct` computed by Postgres (only when NAV exists)
+  - RLS: public read, writes only via the secret key
+- Starter CSVs in `data/seed/` (Gold: 12 metal vehicles, 9 miner ETFs, 15 companies, 9 dealers)
+- Python scripts: `scripts/seed_database.py` (upsert CSVs) and `scripts/check_database.py`
+  (verifies read access and that public writes are blocked)
+- `.env.example` template; `.env.local` (git-ignored) for real keys
+- `@supabase/supabase-js` + `src/lib/supabase/server.ts` (read-only client for pages)
+- Docs: `docs/05-database-setup.md`, `docs/06-data-model.md`
+
+### How to review
+
+Follow [05 — Database setup](./05-database-setup.md): fill `.env.local`, run the migration in
+the Supabase SQL Editor, then run the seed and check scripts.
+
+### Verified (2026-10-02)
+
+- Migration applied in Supabase; seed loaded (7 / 12 / 9 / 15 / 9 rows)
+- `check_database.py`: all 10 tables readable with the publishable key; public insert rejected (HTTP 401)
+
+### Open items
+
+- Verify seed rows marked `verify` in the CSV `notes` column
+- Curate company fundamentals (AISC, NPV, etc.)
+
+---
+
 ## 2026-08-25 — Commodity-specific accent colors
 
 **Goal:** Keep the minimal Gold accent pattern, but give each commodity its own muted hue.

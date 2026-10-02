@@ -26,7 +26,7 @@ import {
   useCallback,
   useContext,
   useEffect,
-  useState,
+  useSyncExternalStore,
   type ReactNode,
 } from "react";
 
@@ -45,19 +45,11 @@ type ThemeContextValue = {
 const ThemeContext = createContext<ThemeContextValue | null>(null);
 
 const STORAGE_KEY = "resourcebook-theme";
+const THEME_EVENT = "resourcebook-theme-change";
 
 /** Read OS preference: true if the user prefers dark mode. */
 function getSystemPrefersDark(): boolean {
-  if (typeof window === "undefined") return false;
   return window.matchMedia("(prefers-color-scheme: dark)").matches;
-}
-
-/** Turn Theme into a concrete light/dark value. */
-function resolveTheme(theme: Theme): "light" | "dark" {
-  if (theme === "system") {
-    return getSystemPrefersDark() ? "dark" : "light";
-  }
-  return theme;
 }
 
 /** Apply or remove the `dark` class on <html>. */
@@ -70,49 +62,60 @@ function applyDomTheme(resolved: "light" | "dark") {
   }
 }
 
+/** Read the saved choice from localStorage (defaults to "system"). */
+function readSavedTheme(): Theme {
+  const saved = window.localStorage.getItem(STORAGE_KEY);
+  return saved === "light" || saved === "dark" ? saved : "system";
+}
+
+/**
+ * Notify subscribers when the saved theme changes. "storage" fires when another
+ * browser tab changes it; THEME_EVENT fires when this tab changes it.
+ */
+function subscribeToSavedTheme(onChange: () => void) {
+  window.addEventListener("storage", onChange);
+  window.addEventListener(THEME_EVENT, onChange);
+  return () => {
+    window.removeEventListener("storage", onChange);
+    window.removeEventListener(THEME_EVENT, onChange);
+  };
+}
+
+/** Notify subscribers when the OS switches between light and dark. */
+function subscribeToSystemTheme(onChange: () => void) {
+  const media = window.matchMedia("(prefers-color-scheme: dark)");
+  media.addEventListener("change", onChange);
+  return () => media.removeEventListener("change", onChange);
+}
+
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  // Start as "system" so SSR (server HTML) and first paint stay predictable.
-  const [theme, setThemeState] = useState<Theme>("system");
-  const [resolvedTheme, setResolvedTheme] = useState<"light" | "dark">("light");
-  // Avoid flashing the wrong theme before we read localStorage.
-  const [ready, setReady] = useState(false);
+  // useSyncExternalStore = "read a value that lives outside React and re-render
+  // when it changes". Here the outside values are localStorage and the OS theme.
+  // The third argument is what the server assumes (it has neither), so server
+  // HTML always starts as "system" / light and the browser corrects it.
+  const theme = useSyncExternalStore(
+    subscribeToSavedTheme,
+    readSavedTheme,
+    () => "system" as const,
+  );
+  const systemPrefersDark = useSyncExternalStore(
+    subscribeToSystemTheme,
+    getSystemPrefersDark,
+    () => false,
+  );
 
-  // On first client mount: read saved preference and paint the page.
+  // Derived value, recalculated on each render; nothing extra to keep in sync.
+  const resolvedTheme: "light" | "dark" =
+    theme === "system" ? (systemPrefersDark ? "dark" : "light") : theme;
+
+  // Paint: add/remove the `dark` class on <html> whenever the result changes.
   useEffect(() => {
-    const saved = window.localStorage.getItem(STORAGE_KEY) as Theme | null;
-    const initial: Theme =
-      saved === "light" || saved === "dark" || saved === "system"
-        ? saved
-        : "system";
-
-    const resolved = resolveTheme(initial);
-    setThemeState(initial);
-    setResolvedTheme(resolved);
-    applyDomTheme(resolved);
-    setReady(true);
-  }, []);
-
-  // If theme is "system", re-apply when the OS theme changes (e.g. night mode).
-  useEffect(() => {
-    if (!ready || theme !== "system") return;
-
-    const media = window.matchMedia("(prefers-color-scheme: dark)");
-    const onChange = () => {
-      const resolved = resolveTheme("system");
-      setResolvedTheme(resolved);
-      applyDomTheme(resolved);
-    };
-
-    media.addEventListener("change", onChange);
-    return () => media.removeEventListener("change", onChange);
-  }, [theme, ready]);
+    applyDomTheme(resolvedTheme);
+  }, [resolvedTheme]);
 
   const setTheme = useCallback((next: Theme) => {
-    setThemeState(next);
     window.localStorage.setItem(STORAGE_KEY, next);
-    const resolved = resolveTheme(next);
-    setResolvedTheme(resolved);
-    applyDomTheme(resolved);
+    window.dispatchEvent(new Event(THEME_EVENT));
   }, []);
 
   return (

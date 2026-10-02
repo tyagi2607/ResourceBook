@@ -25,24 +25,28 @@ import { COMMODITIES, GOLD_NAV_LINKS } from "@/lib/commodities";
 
 export function CommodityNav() {
   const pathname = usePathname();
-  const [goldOpen, setGoldOpen] = useState(false);
   const goldRef = useRef<HTMLLIElement>(null);
+
+  // We remember WHICH page the dropdown was opened on (or null = closed).
+  // The menu counts as open only while we're still on that page, so it
+  // closes automatically after navigating — no extra effect needed.
+  const [openedOnPath, setOpenedOnPath] = useState<string | null>(null);
+  const goldOpen = openedOnPath === pathname;
+  const setGoldOpen = (open: boolean | ((open: boolean) => boolean)) => {
+    const next = typeof open === "function" ? open(goldOpen) : open;
+    setOpenedOnPath(next ? pathname : null);
+  };
 
   // Close the Gold dropdown when clicking outside of it.
   useEffect(() => {
     function onPointerDown(event: MouseEvent) {
       if (!goldRef.current?.contains(event.target as Node)) {
-        setGoldOpen(false);
+        setOpenedOnPath(null);
       }
     }
     document.addEventListener("mousedown", onPointerDown);
     return () => document.removeEventListener("mousedown", onPointerDown);
   }, []);
-
-  // Close dropdown when the route changes (user navigated).
-  useEffect(() => {
-    setGoldOpen(false);
-  }, [pathname]);
 
   return (
     <nav aria-label="Commodities" className="min-w-0">
