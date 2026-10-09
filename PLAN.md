@@ -2,7 +2,7 @@
 
 **Product:** ResourceBook  
 **Status:** Planning complete — ready to build MVP  
-**Last updated:** 2026-08-22
+**Last updated:** 2026-10-09
 
 This document is the source of truth for the Gold Hub MVP dashboard. Earlier brainstorm notes live in `README.md`, `Resource Book Requirements.docx`, and `Page by Page plan for each commodities.xlsx`.
 
@@ -19,9 +19,10 @@ This document is the source of truth for the Gold Hub MVP dashboard. Earlier bra
 | Companies page | Equities by Lassonde tier **plus gold miner ETFs** (US/CA majors and juniors) — not physical-metal funds |
 | Nav | Top commodities; click = hub home; hover = simple single-list page menu |
 | Charts | TradingView widgets only (interactive price charts) |
+| Headline quotes | TradingView quote widgets on hub pages, so cards match the chart (decided 2026-10-08) |
 | Market data | Yahoo Finance (`yfinance`) daily into Supabase — one quote source |
 | History | Daily snapshots in Supabase so metrics (e.g. price-to-NAV) can be charted over time |
-| Why Gold | Section on `/gold` Overview for MVP (own `/gold/why` route later if needed) |
+| Why Gold | Compact driver strip on `/gold`; full sections on a new `/gold/why` page (decided 2026-10-09) |
 | Default Physical market | **USA (USD)**; one-click switch to Canada (CAD) |
 | Auth | Fully public; no login for MVP |
 | Disclaimer | One footer line (“not investment advice”); full legal pages later |
@@ -31,14 +32,19 @@ This document is the source of truth for the Gold Hub MVP dashboard. Earlier bra
 
 ---
 
-## 2. Data architecture (two external sources)
+## 2. Data architecture (external sources)
 
 | Role | Source | Cost |
 | --- | --- | --- |
-| Interactive price charts | TradingView free widgets | $0 |
+| Interactive price charts + live headline quotes | TradingView free widgets | $0 |
 | Quotes, EOD prices, basic ETF/equity fields | Yahoo via `yfinance` (daily ETL) | $0 |
 | Mining fundamentals (AISC, NPV, tiers, assays) | Curated CSV / manual seed (Gemini later) | $0 |
 | Analytical charts over time (NAV premium, AISC trends) | **Supabase history we accumulate** | $0 |
+| Macro series: real yields, nominal yields, breakeven inflation | FRED API (daily script) | $0 (free key) |
+| Government debt and deficits (% of GDP) | IMF DataMapper API (monthly script; data changes Apr/Oct) | $0 |
+| Central bank gold reserves | Hand-edited CSV first (IMF / central bank releases), IMF reserves API (IRFCL) later; World Gold Council only with written permission | $0 |
+
+Per-datapoint details (display, storage, refresh, citations, licensing) for the Gold Overview: [`docs/08-gold-overview-data-plan.md`](docs/08-gold-overview-data-plan.md). **The WGC terms forbid scraping or republishing their data without written permission.**
 
 No FMP / Polygon / Alpha Vantage required for MVP. If Yahoo becomes unreliable later, swap the ETL adapter; the schema stays the same.
 
@@ -69,7 +75,7 @@ flowchart TB
   History --> AnalyticCharts
 ```
 
-**TradingView:** charts users interact with (spot, ticker OHLC). We do not scrape TradingView into the DB.
+**TradingView:** charts users interact with (spot, ticker OHLC), plus the live quote cards above them (spot, change, day range, gold/silver ratio) so cards and chart always agree. Yahoo has no gold spot price (only `GC=F` futures), so Yahoo-based cards would not match. We do not scrape TradingView into the DB.
 
 **Yahoo daily ETL:** upserts current rows **and appends a history row** each day. That history powers premium/discount over time and similar series.
 
@@ -111,8 +117,9 @@ UI charts for these series use **Recharts (or similar) reading Supabase** — no
 **Gold dropdown (MVP):**
 
 1. Overview — `/gold`
-2. Physical (Metal ETFs & Dealers) — `/gold/physical`
-3. Companies (Equities & Miner ETFs) — `/gold/companies`
+2. Why gold — `/gold/why` (built 2026-10-09, see `docs/08-gold-overview-data-plan.md`)
+3. Physical (Metal ETFs & Dealers) — `/gold/physical`
+4. Companies (Equities & Miner ETFs) — `/gold/companies`
 
 **Non-gold:** same labels; destinations are stubs (“Coming soon”) except Overview stub.
 
@@ -124,6 +131,7 @@ AISC leaderboard and top movers are **sections on Overview**, not separate nav i
 | --- | --- |
 | `/` | Build — site Home |
 | `/gold` | Build — macro overview (includes Why Gold section) |
+| `/gold/why` | Build — full Why Gold sections (central banks, deficits, geopolitics, real rates) |
 | `/gold/physical` | Build — metal ETFs + dealers, CA/US filter, NAV history |
 | `/gold/companies` | Build — Lassonde equities + miner ETFs |
 | `/gold/companies?tier=` | Same page, tab/query filter |
@@ -158,9 +166,12 @@ AISC leaderboard and top movers are **sections on Overview**, not separate nav i
 
 **Job:** Macro + narrative gateway.
 
-- **Stats bar** (Supabase current row from Yahoo ETL): spot, 24h change, 52-week range, gold/silver ratio when available
-- **Main chart:** TradingView gold spot / futures embed
-- **Why Gold / tailwinds:** cards — CB accumulation, deficits, geopolitics, real rates
+- **Live quotes** (TradingView, same feed as the chart): spot, 1-day change, previous close, open, day's range; gold/silver ratio via `OANDA:XAUUSD/OANDA:XAGUSD`. 52-week range dropped (no free widget offers it; chart opens on 12 months)
+- **Main chart:** TradingView gold spot embed (`OANDA:XAUUSD`)
+- **Brand mark (planned):** RB gold coin beside the "Gold hub" label in the page header. Every hub gets a tinted mark: coin for silver/copper, atom for uranium, drop for oil, flame for gas, battery for battery metals (`docs/08-gold-overview-data-plan.md`, card 1)
+- **Extra cards (planned):** gold futures last close (Yahoo `GC=F`; free TradingView widgets block COMEX), GLD volume signal (5-session vs 252-session average volume)
+- **Why Gold intro:** money for millennia, long-run inflation hedge (with honest caveat)
+- **Driver strip (planned):** one live number per driver, linking to `/gold/why` for central banks (reserves CSV), deficits (IMF top-10 table), geopolitics (cited cards), real rates (FRED card, formula strip, gold vs inverted real yield chart). Full plan: `docs/08-gold-overview-data-plan.md`
 - **Supply/demand preview:** light editorial; full specialty later
 - **Leaderboards (DB):** top movers; top 5 AISC producers → Companies filter
 
@@ -249,6 +260,14 @@ Same header + simple dropdown; body: coming soon + CTA to Gold / Home.
 - `commodity_daily` — `(symbol, as_of_date)` PK; price, change_24h
 - `company_daily` — `(ticker, as_of_date)` PK; price, market_cap, change_pct
 
+### Macro and reference data (planned, see `docs/08-gold-overview-data-plan.md`)
+
+- `macro_series` + `macro_observations` — FRED series (DFII10, DGS10, T10YIE, …)
+- `country_fiscal` — IMF debt and fiscal balance % of GDP by country and year
+- `central_bank_gold_reserves` — tonnes and % of reserves by country and month
+- `data_refresh_log` — one row per scheduled job run (powers "Updated <date>" labels)
+- `commodity_daily` / `vehicle_daily` gain `volume` (and OHLC on `commodity_daily`)
+
 ### Later
 
 - `quarterly_metrics` — Gemini extractions
@@ -273,11 +292,12 @@ Same header + simple dropdown; body: coming soon + CTA to Gold / Home.
 1. ~~Scaffold — theme, header, click + simple hover dropdown, stubs~~ **Done (2026-08-25)** — see `docs/BUILD_LOG.md`
 2. ~~Supabase schema — current + daily history tables + gold seed CSV~~ **Built (2026-10-01)** — see `docs/05-database-setup.md`
 3. Home `/` polish (content already scaffolded; iterate with design)
-4. `/gold` overview — stats, TradingView, narrative, leaderboards
+4. ~~`/gold` overview — stats, TradingView, narrative, leaderboards~~ **Built (2026-10-08)** — see `docs/07-gold-overview.md`; stats/movers fill in once step 8 (ETL) runs
 5. `/gold/physical` — CA/US filter, metal ETF table, dealers, history chart
 6. `/gold/companies` — Lassonde tabs + Miner ETFs tab
 7. `/gold/[ticker]`
-8. Daily Yahoo ETL — upsert current + insert history
+8. ~~Daily Yahoo ETL — upsert current + insert history, volume + backfill~~ **Built (2026-10-09)** — `scripts/etl_yahoo.py`, see `docs/09-data-jobs.md`
+8b. ~~Gold Overview macro data — FRED, IMF fiscal, central bank reserves, scheduled jobs (doc 08 phases A–E)~~ **Built (2026-10-09)** — `/gold/why`, see `docs/08-gold-overview-data-plan.md` ("As built") and `docs/09-data-jobs.md`
 9. Commodity stubs polish
 10. Empty states, mobile nav, SEO, footer disclaimer
 
