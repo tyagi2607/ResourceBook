@@ -1,6 +1,12 @@
 # 06 — Data model (data dictionary)
 
-Source of truth: `supabase/migrations/20261002000000_initial_schema.sql`.
+Source of truth: the SQL files in `supabase/migrations/`, run in date order:
+
+| Migration | Adds |
+| --- | --- |
+| `20261002000000_initial_schema.sql` | The 10 instrument tables below |
+| `20261009000000_gold_macro_data.sql` | Daily open/high/low/volume on `commodity_daily`, plus 5 macro and reference tables (see [Macro and reference tables](#macro-and-reference-tables)) |
+
 This page explains every table in plain terms.
 
 ## Two kinds of tables
@@ -109,7 +115,7 @@ Deleting a parent row (e.g. a vehicle) deletes its history too (`on delete casca
 
 | Table | Columns beyond the key |
 | --- | --- |
-| `commodity_daily` | `close_price`, `source` |
+| `commodity_daily` | `open_price`, `high_price`, `low_price`, `close_price`, `volume`, `source`. Gold (`GC=F`) goes back to 2003 for the real-rates chart. |
 | `vehicle_daily` | `close_price`, `nav_per_share`, computed `premium_discount_pct`, `volume`, `source` |
 | `miner_etf_daily` | `close_price`, `volume`, `source` |
 | `company_daily` | `close_price`, `market_cap`, `volume`, `source` |
@@ -126,9 +132,64 @@ group by d.as_of_date
 order by d.as_of_date;
 ```
 
+## Macro and reference tables
+
+Data that isn't about one instrument: interest rates, government finances, central bank gold, and
+a log of the scripts that load it. Filled by the jobs in [09 — Data jobs](./09-data-jobs.md);
+shown on `/gold` (driver strip) and `/gold/why`.
+
+### `macro_series` and `macro_observations` — economic time series (FRED)
+
+A dimension table plus a fact table, so any future series (CPI, dollar index, …) fits without a
+new table.
+
+| Table | Key | Other columns |
+| --- | --- | --- |
+| `macro_series` | `series_id`, e.g. `DFII10` | `title`, `units`, `frequency`, `source`, `source_url`, `citation` (the exact credit line the page shows) |
+| `macro_observations` | `(series_id, obs_date)` | `value` |
+
+Series loaded: `DFII10` (10-year real yield), `DGS10` (10-year nominal yield), `T10YIE`
+(10-year breakeven inflation). All in percent.
+
+### `country_fiscal` — government debt and deficits (IMF)
+
+One row per country per year, 2000 to two years ahead.
+
+| Column | Notes |
+| --- | --- |
+| `country_iso3`, `year` (PK) | e.g. `USA`, `2026` |
+| `country_name` | Short display name ("United States", "South Korea") |
+| `gross_debt_pct_gdp` | General government gross debt, % of GDP |
+| `fiscal_balance_pct_gdp` | Net lending/borrowing, % of GDP. **Negative = deficit.** |
+| `gdp_usd_bn` | GDP in billions of current US dollars (used to pick the top 10) |
+| `is_projection` | `true` for the current year and later (IMF estimates) |
+| `vintage` | IMF release the numbers come from, e.g. `April 2026` |
+
+### `central_bank_gold_reserves` — official gold holdings by country
+
+One row per country, per month, per source, so IMF, WGC (if ever permitted), and hand-entered rows
+can sit side by side. The page prefers `imf` over `manual` for the same country and month.
+
+| Column | Notes |
+| --- | --- |
+| `country_iso3`, `period`, `source` (PK) | `period` is the first day of the month the figure refers to; `source` is `imf`, `wgc`, or `manual` |
+| `country_name` | Display name |
+| `tonnes` | Converted from fine troy ounces (1 t = 32,150.7466 oz) |
+| `gold_value_usd` | Gold at **market** price (revalued where a country books it at a historical price) |
+| `total_reserves_usd` | Official reserve assets, with gold at market price |
+| `pct_of_reserves` | Gold's share of total reserves, % |
+
+Cleaning rules (unit errors, skipped months) are listed in
+[09 — Data jobs](./09-data-jobs.md#data-quality-rules-central-bank-reserves).
+
+### `data_refresh_log` — one row per script run
+
+`id`, `job`, `ran_at`, `status` (`ok` or `error`), `rows_written`, `message`. Powers the
+"Updated <date>" lines and is the first place to look when a number seems stale.
+
 ## Security
 
-- Row Level Security is **on** for all 10 tables.
+- Row Level Security is **on** for all 15 tables.
 - Policy **"Public read access"**: anyone (publishable key) can `SELECT`.
 - Insert/update/delete are revoked from public roles. Only the secret key
   (`service_role`, used by `/scripts`) can write.

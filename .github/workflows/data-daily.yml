@@ -1,0 +1,41 @@
+# Daily data refresh: market prices (Yahoo) and US interest rates (FRED).
+#
+# Runs on GitHub's servers on weekdays at 22:30 UTC (after the US market close),
+# and can be started by hand from the repo's Actions tab ("Run workflow").
+#
+# Needs two repository secrets (Settings -> Secrets and variables -> Actions):
+#   NEXT_PUBLIC_SUPABASE_URL   your Supabase project URL
+#   SUPABASE_SECRET_KEY        the secret key (sb_secret_...), never the publishable key
+#
+# Each script also writes a row to data_refresh_log, which the site shows as
+# "Updated <date>". A failed run shows as a red X in the Actions tab.
+
+name: Data refresh (daily)
+
+on:
+  schedule:
+    - cron: "30 22 * * 1-5"
+  workflow_dispatch:
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+      SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: scripts/requirements.txt
+      - run: pip install -r scripts/requirements.txt
+
+      - name: Yahoo prices (gold futures, ETFs, miners, companies)
+        run: python scripts/etl_yahoo.py
+
+      - name: FRED rates (real yield, nominal yield, breakeven inflation)
+        if: always()  # run even if the Yahoo step failed
+        run: python scripts/fetch_fred.py

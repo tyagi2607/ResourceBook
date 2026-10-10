@@ -62,6 +62,11 @@ export const GOLD_NAV_LINKS: NavLink[] = [
     description: "Spot price, chart, narrative drivers, leaderboards",
   },
   {
+    href: "/gold/why",
+    label: "Why gold",
+    description: "Central banks, debt, geopolitics, real rates — with data",
+  },
+  {
     href: "/gold/physical",
     label: "Physical (Metal ETFs & Dealers)",
     description: "Own the metal — ETFs/trusts and dealers by CA/US",

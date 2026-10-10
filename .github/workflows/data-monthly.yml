@@ -1,0 +1,38 @@
+# Monthly data refresh: IMF official gold reserves and IMF debt/deficit figures.
+#
+# Runs on the 10th of each month at 09:00 UTC (most central banks have reported
+# the previous month by then), and can be started by hand from the Actions tab.
+# The IMF fiscal numbers only change in April and October; re-running monthly
+# simply rewrites the same values, so a new release is never missed.
+#
+# Uses the same two secrets as data-daily.yml.
+
+name: Data refresh (monthly)
+
+on:
+  schedule:
+    - cron: "0 9 10 * *"
+  workflow_dispatch:
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+      SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: scripts/requirements.txt
+      - run: pip install -r scripts/requirements.txt
+
+      - name: IMF official gold reserves (last 3 years, upserted)
+        run: python scripts/fetch_imf_gold_reserves.py
+
+      - name: IMF debt and deficits
+        if: always()
+        run: python scripts/fetch_imf_fiscal.py
