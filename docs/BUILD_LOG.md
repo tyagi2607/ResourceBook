@@ -11,9 +11,10 @@ data, macro data, scheduled refreshes, and the pages that show them.
 
 ### Shipped
 
-- **Hub marks:** `HubMark` logos for all 7 hubs, shown beside the "<Commodity> hub" label (coin
-  for gold, silver, copper; atom for uranium; drop for oil; flame for gas; battery for battery
-  metals). Coming-soon pages use them too.
+- **Hub marks:** `HubMark` logos for all 7 hubs, shown beside the "<Commodity> hub" label.
+  Revised the same day into a bullion-style coin (reeded edge, rim, beads, embossed RB) in each
+  hub's metal, with a hallmark under RB: Au, Ag, Cu, atom, drop, flame, battery. Coming-soon pages
+  use them too.
 - **Migration** `supabase/migrations/20261009000000_gold_macro_data.sql`: open/high/low/volume on
   `commodity_daily`; new tables `macro_series`, `macro_observations`, `country_fiscal`,
   `central_bank_gold_reserves`, `data_refresh_log` (public read, script write)

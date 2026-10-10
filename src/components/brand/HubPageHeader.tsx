@@ -24,7 +24,7 @@ export function HubPageHeader({ slug, eyebrow, title, intro }: HubPageHeaderProp
   return (
     <header>
       <div className="flex items-center gap-4">
-        <HubMark slug={slug} size={52} />
+        <HubMark slug={slug} size={60} />
         <div>
           <p className="text-sm font-medium text-accent-fg">{eyebrow}</p>
           <h1 className="mt-0.5 text-3xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-50">

@@ -94,29 +94,31 @@ I checked each source's terms before planning around it.
   label above the "Gold overview" title. The site header and favicon stay as they are for now.
 - **Limitation:** the TradingView quote widget draws its own icon inside its sealed frame, so we
   can't put our coin *inside* it.
-- **Storage:** an SVG React component (`src/components/brand/HubMark.tsx`). Colours come from the
-  hub's accent token, so it adapts to dark mode.
+- **Storage:** an SVG React component (`src/components/brand/HubMark.tsx`).
 - **Updates:** none.
-- **Every hub gets its own mark (decided 2026-10-09).** One `HubMark` component chooses the shape
-  for each commodity. The colour comes from the hub's accent token (`data-commodity`, see
-  [doc 04](./04-commodity-colors.md)), so each mark is automatically tinted and works in light and
-  dark mode.
+- **Every hub gets a precious-metal coin (revised 2026-10-09).** The first version used different
+  shapes per hub (atom, drop, flame, battery) and a flat outline coin; it didn't read as a coin.
+  Now every hub uses the same bullion-style coin:
+  - reeded (ridged) edge and a raised rim
+  - polished face with a highlight toward the top-left, and a ring of beads inside the rim
+  - **RB** embossed in the middle
+  - a small hallmark under RB that tells the hubs apart
 
-  | Hub | Mark | Colour |
+  | Hub | Hallmark under RB | Coin metal |
   | --- | --- | --- |
-  | Gold | Coin with **RB** | Gold accent |
-  | Silver | Same coin with **RB** | Silver accent |
-  | Copper | Same coin with **RB** | Copper accent |
-  | Uranium (nuclear) | **Atom**: nucleus of protons and neutrons with orbiting electron rings (no RB text, too small to read inside) | Isotope green |
-  | Oil | **Oil drop** with **RB** inside | Crude amber |
-  | Gas | **Flame** with **RB** at its base | Methane blue |
-  | Battery Metals | **Battery** outline, **RB** inside, small charge bolt on the cap | Cobalt indigo |
+  | Gold | **Au** | Bright gold |
+  | Silver | **Ag** | Polished silver |
+  | Copper | **Cu** | Copper |
+  | Uranium (nuclear) | Tiny **atom** | Isotope green |
+  | Oil | Tiny **oil drop** | Dark crude amber |
+  | Gas | Tiny **flame** | Methane blue |
+  | Battery Metals | Tiny **battery** with a charge bolt | Cobalt indigo |
 
-  - The three metals share one coin drawing and change only colour. Energy and uranium get a
-    shape that says "this is not a metal".
-  - Each mark is drawn as a simple outline so it stays readable at 24–32 px.
-  - Placement is the same on every hub: beside the "<Commodity> hub" label above the page title.
-    The non-gold "coming soon" pages show their mark too.
+  - **Colours:** each coin has its own fixed five-shade metal palette in `HubMark.tsx`
+    (`PALETTES`). They are brighter than the page accent colours, which are darkened for readable
+    text and made the gold coin look like bronze. The coin looks the same in light and dark mode.
+  - Placement is the same on every hub: beside the "<Commodity> hub" label above the page title,
+    60 px wide. The "coming soon" pages show their coin too.
 
 ### 2. Spot price ✅ built
 
@@ -398,9 +400,9 @@ an hour of a job finishing.
 
 ### What the decisions change
 
-- **Logo:** a `HubMark` SVG component placed in each hub's page header: a coin for gold, silver,
-  and copper (tinted per hub), an atom for uranium, a drop for oil, a flame for gas, and a battery
-  for battery metals. See [card 1](#1-logo-hub-marks-rb-coin-on-gold).
+- **Logo:** a `HubMark` SVG component placed in each hub's page header: an RB precious-metal coin
+  in each hub's metal, with a small hallmark (Au, Ag, Cu, atom, drop, flame, battery). See
+  [card 1](#1-logo-hub-marks-rb-coin-on-gold).
 - **`/gold` keeps:** the quote cards (spot, ratio, futures last close, GLD volume signal), the chart,
   the intro, a **driver strip** (4 tiles, each with one live number), supply and demand,
   leaderboards, and ways to own.

@@ -168,7 +168,7 @@ AISC leaderboard and top movers are **sections on Overview**, not separate nav i
 
 - **Live quotes** (TradingView, same feed as the chart): spot, 1-day change, previous close, open, day's range; gold/silver ratio via `OANDA:XAUUSD/OANDA:XAGUSD`. 52-week range dropped (no free widget offers it; chart opens on 12 months)
 - **Main chart:** TradingView gold spot embed (`OANDA:XAUUSD`)
-- **Brand mark (planned):** RB gold coin beside the "Gold hub" label in the page header. Every hub gets a tinted mark: coin for silver/copper, atom for uranium, drop for oil, flame for gas, battery for battery metals (`docs/08-gold-overview-data-plan.md`, card 1)
+- **Brand mark (built):** RB precious-metal coin beside the "<Commodity> hub" label in the page header. Every hub gets the same coin in its own metal, with a small hallmark under RB: Au, Ag, Cu, atom (uranium), drop (oil), flame (gas), battery (battery metals) (`docs/08-gold-overview-data-plan.md`, card 1)
 - **Extra cards (planned):** gold futures last close (Yahoo `GC=F`; free TradingView widgets block COMEX), GLD volume signal (5-session vs 252-session average volume)
 - **Why Gold intro:** money for millennia, long-run inflation hedge (with honest caveat)
 - **Driver strip (planned):** one live number per driver, linking to `/gold/why` for central banks (reserves CSV), deficits (IMF top-10 table), geopolitics (cited cards), real rates (FRED card, formula strip, gold vs inverted real yield chart). Full plan: `docs/08-gold-overview-data-plan.md`

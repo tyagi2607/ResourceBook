@@ -16,9 +16,10 @@ Minimal, professional accents per commodity. Same usage pattern as the original 
 
 Oil is a deeper brown-amber than Gold so the two stay distinct. Battery Metals was not specified in the brief — muted cobalt is a temporary pick.
 
-Each hub's logo mark (planned `HubMark` component) uses the same accent colour: a coin for gold,
-silver, and copper; an atom for uranium; a drop for oil; a flame for gas; a battery for battery
-metals. See [doc 08](./08-gold-overview-data-plan.md#1-logo-hub-marks-rb-coin-on-gold).
+Each hub's logo (`HubMark`, an RB precious-metal coin) is the one exception: it uses its own
+brighter metal palette defined in `src/components/brand/HubMark.tsx`, not the accent tokens, so
+the gold coin looks like gold rather than bronze. See
+[doc 08](./08-gold-overview-data-plan.md#1-logo-hub-marks-rb-coin-on-gold).
 
 ## How it works
 
