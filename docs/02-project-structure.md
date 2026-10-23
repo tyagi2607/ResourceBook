@@ -31,15 +31,19 @@ src/
 │   │   ├── page.tsx           # /gold
 │   │   ├── why/page.tsx       # /gold/why (the four drivers, with data)
 │   │   ├── physical/page.tsx  # /gold/physical
-│   │   └── companies/page.tsx # /gold/companies
+│   │   └── companies/
+│   │       ├── page.tsx       # /gold/companies screener
+│   │       └── [ticker]/page.tsx  # company detail (mines, management)
 │   └── [commodity]/page.tsx  # /silver, /copper, … stubs
 ├── components/
 │   ├── brand/                 # HubMark logos + the hub page header
 │   ├── charts/                # TradingView widgets + our own Recharts charts (client)
 │   ├── layout/                # Header, footer, nav, theme toggle
 │   ├── overview/              # Leaderboard, market cards, driver strip
+│   ├── physical/              # /gold/physical: market switch, fund table, dealer cards
+│   ├── companies/             # /gold/companies: tier tabs, screener tables, detail panels
 │   ├── why/                   # One section per driver on /gold/why
-│   ├── ui/                    # Small shared pieces: page section, source note
+│   ├── ui/                    # Small shared pieces: page section, source note, sortable table
 │   ├── providers/             # ThemeProvider (React context)
 │   └── ComingSoonStub.tsx
 ├── content/
@@ -47,7 +51,7 @@ src/
 └── lib/
     ├── commodities.ts         # Nav “dimension table”
     ├── format.ts              # Number / price / date formatting
-    ├── data/                  # Supabase queries, one file per page
+    ├── data/                  # Supabase queries, one file per page (+ query-helpers.ts)
     └── supabase/server.ts     # Read-only Supabase client
 ```
 

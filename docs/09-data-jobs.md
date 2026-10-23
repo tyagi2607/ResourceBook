@@ -11,7 +11,7 @@ only ever read the data; they never call these sources directly.
 
 | Script | Source | Writes to | Schedule | Run by hand |
 | --- | --- | --- | --- | --- |
-| `etl_yahoo.py` | Yahoo Finance (`yfinance`) | `commodity_daily`, `commodities` (price, 52-week range), `vehicle_daily`, `miner_etf_daily`, `company_daily`, and the current-price columns of `vehicles`, `miner_etfs`, `companies` | Weekdays 22:30 UTC | `python scripts\etl_yahoo.py` |
+| `etl_yahoo.py` | Yahoo Finance (`yfinance`) | `commodity_daily`, `commodities` (price, 52-week range), `vehicle_daily`, `miner_etf_daily`, `company_daily`, and the current-price columns of `vehicles`, `miner_etfs`, `companies` (plus total assets, `aum`, for funds) | Weekdays 22:30 UTC | `python scripts\etl_yahoo.py` |
 | `fetch_fred.py` | FRED public CSV (DFII10, DGS10, T10YIE) | `macro_series`, `macro_observations` | Weekdays, right after Yahoo | `python scripts\fetch_fred.py` |
 | `fetch_imf_gold_reserves.py` | IMF IRFCL API (gold ounces, gold value, total reserves) | `central_bank_gold_reserves` (`source = 'imf'`) | 10th of each month, 09:00 UTC | `python scripts\fetch_imf_gold_reserves.py` |
 | `fetch_imf_fiscal.py` | IMF DataMapper API (debt, deficit, GDP) | `country_fiscal` | 10th of each month, after reserves | `python scripts\fetch_imf_fiscal.py` |
@@ -104,7 +104,11 @@ require.
 
 ## Known issues
 
-- `ODV` and `SGD.V` (in `data/seed/companies.csv`) aren't found on Yahoo; the ETL prints a
-  warning and skips them. Fix the symbols in the seed CSV and re-run `seed_database.py`.
+- Fixed 2026-10-10: `ODV` is now `OGG` (Osisko Development, NYSE) and `SGD.V` is now `SGD.TO`
+  (Snowline Gold, now on the TSX). If Yahoo stops finding a symbol, the ETL prints a warning and
+  skips it; fix the symbol in the seed CSV and re-run `seed_database.py`.
+- Yahoo reports fund assets for most funds but not for KILO, ZGLD, or PHYS; those show "—".
+- Yahoo also reports a fund NAV, but without a date, and it didn't match any recent close. We
+  don't store it; see [doc 10](./10-gold-physical.md#nav-and-premium-discount).
 - Yahoo is an unofficial source. Replace it with a licensed feed before any commercial launch
   (the tables stay the same).

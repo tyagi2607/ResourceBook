@@ -1,0 +1,3 @@
+company_symbol,role,name,since_year,notes,sort_order
+AEM,ceo,Ammar Al-Joundi,2022,Verify tenure from latest AIF / proxy,10
+AEM,cfo,Jamie Porter,,Verify name and since_year from latest AIF,20

@@ -4,6 +4,69 @@ Chronological record of what we implemented. Newest entries at the top.
 
 ---
 
+## 2026-10-23 — Step 6 A–C: `/gold/companies` screener + Agnico detail
+
+**Goal:** Sortable comps by Lassonde tier + miner ETFs; company detail with Overview,
+Management, Mines (rollup), Sources; store gold **price assumptions** so reported AISC
+margins can be compared to today's spot. Template: Agnico Eagle (AEM). See
+[doc 11](./11-gold-companies.md).
+
+### Shipped
+
+- Migration `20261023000000_company_mines_detail.sql`: producer columns on `companies`;
+  tables `company_mines`, `company_people`, `company_sources`; history columns extended
+- Seed CSVs + `seed_database.py` load order for the new tables; AEM company / mines /
+  people / sources started from Notion research (mine koz/AISC still to fill from filings)
+- Screener `/gold/companies` with `?tier=` tabs and reusable `DataTable`
+- Detail `/gold/companies/[ticker]` with reported-vs-spot AISC panel and mine rollup check
+- Docs: 11, updates to 02, 06, README, PLAN
+
+### Open
+
+- **You:** run the new migration in the Supabase SQL Editor, then re-seed
+- Fill AEM mine-level production / AISC / P&P from the reserve statement
+- Phase D: Valuation tab, re-NAV at spot
+
+---
+
+## 2026-10-10 — Step 5: `/gold/physical` (branch `gold-physical-companies`)
+
+**Goal:** Replace the Physical placeholder with real data: gold funds and bullion dealers for the
+US or Canada. Details in [doc 10](./10-gold-physical.md).
+
+### Shipped
+
+- **Market switch** USA — USD (default) / Canada — CAD, held in the URL (`?market=ca`)
+- **Gold funds table** (sortable): price, 1-day change, fee, assets, average traded per day
+  (30 sessions), vault, redeemable for metal; fund-type explainer cards above it
+- **Dealer cards** for the same market, with a "not endorsements" note
+- **Reusable `DataTable`** (`src/components/ui/`) for the Companies page next
+- **ETL:** `etl_yahoo.py` now stores fund total assets (`aum`) for metal and miner ETFs
+- **Seed fixes:** `ODV` → `OGG` (NYSE), `SGD.V` → `SGD.TO` (TSX); fees for CGL.C, KILO, ZGLD
+  (from Yahoo, flagged to verify with the issuer)
+- Shared query helpers moved to `src/lib/data/query-helpers.ts`
+
+### Verified
+
+- Seed and Yahoo refresh ran: assets for 9 of 12 funds (none on Yahoo for KILO, ZGLD, PHYS);
+  `OGG` $2.79 and `SGD.TO` CA$15.20 priced
+- US and Canada views, column sorting, light and dark mode checked in the browser
+- Lint, type-check, and production build pass
+
+### Decided
+
+- **No premium/discount column yet.** Yahoo's fund NAV has no date and matched none of GLD's
+  recent closes, so it isn't stored. Plan: dated NAVs from Sprott (PHYS) and the Mint (MNT),
+  after checking their terms; the column and history chart then appear automatically
+
+### Open items
+
+- Dated issuer NAVs for PHYS and MNT, then the premium history chart
+- Companies page: fundamentals columns in `companies.csv` (blank until filled from filings),
+  tabs, and the sortable table
+
+---
+
 ## 2026-10-09 — Steps 8 + 8b: Data jobs, `/gold` cards, and the new `/gold/why` page
 
 **Goal:** Implement every phase of [doc 08](./08-gold-overview-data-plan.md): stored market

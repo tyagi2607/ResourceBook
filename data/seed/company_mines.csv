@@ -1,0 +1,9 @@
+company_symbol,mine_slug,name,country,region,status,ownership_pct,production_koz,aisc_per_oz,aisc_gold_price_usd,reserves_pp_moz,resources_mi_moz,as_of,source_url,notes,sort_order,is_active
+AEM,detour-lake,Detour Lake,Canada,Ontario,operating,100,,,,,,2026-02-13,https://www.agnicoeagle.com/,Fill production AISC and P&P from AIF / reserve statement,10,true
+AEM,canadian-malartic,Canadian Malartic Complex,Canada,Quebec,operating,100,,,,,,2026-02-13,https://www.agnicoeagle.com/,Includes Odyssey underground ramp-up — verify attributable split,20,true
+AEM,macassa,Macassa,Canada,Ontario,operating,100,,,,,,2026-02-13,https://www.agnicoeagle.com/,,30,true
+AEM,fosterville,Fosterville,Australia,Victoria,operating,100,,,,,,2026-02-13,https://www.agnicoeagle.com/,,40,true
+AEM,laronde,LaRonde Complex,Canada,Quebec,operating,100,,,,,,2026-02-13,https://www.agnicoeagle.com/,,50,true
+AEM,meadowbank,Meadowbank Complex,Canada,Nunavut,operating,100,,,,,,2026-02-13,https://www.agnicoeagle.com/,Includes Amaruq,60,true
+AEM,kittila,Kittila,Finland,Lapland,operating,100,,,,,,2026-02-13,https://www.agnicoeagle.com/,,70,true
+AEM,pinos-altos,Pinos Altos,Mexico,Chihuahua,operating,100,,,,,,2026-02-13,https://www.agnicoeagle.com/,,80,true

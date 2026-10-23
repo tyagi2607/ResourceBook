@@ -187,3 +187,101 @@ export const GOLD_SUPPLY_DEMAND_SOURCE = {
   label: "World Gold Council — Gold Demand Trends",
   href: "https://www.gold.org/goldhub/research/gold-demand-trends",
 };
+
+/* ===========================================================================
+ * Physical page (/gold/physical) — docs/10-gold-physical.md
+ * ========================================================================= */
+
+export const PHYSICAL_INTRO =
+  "Ways to own gold itself rather than mining companies: exchange-traded funds and trusts that hold bullion in a vault for you, or coins and bars bought from a dealer.";
+
+export type VehicleStructure = "etf" | "trust" | "receipt";
+
+/** Plain-language explanation of each fund structure (shown as cards above the table). */
+export const VEHICLE_STRUCTURES: Record<VehicleStructure, { label: string; body: string }> = {
+  etf: {
+    label: "ETF",
+    body: "Shares backed by gold in a vault. Large traders create and redeem shares every day, which keeps the price very close to the value of the gold behind it. Ordinary investors generally can't swap shares for metal.",
+  },
+  trust: {
+    label: "Physical trust",
+    body: "A trust that holds allocated bullion and rarely issues new units, so its price can drift above or below the value of its gold (a premium or discount). Unitholders can redeem for bars, subject to minimum sizes and fees.",
+  },
+  receipt: {
+    label: "Exchange-traded receipt",
+    body: "Receipts issued by the Royal Canadian Mint, a federal Crown corporation, for gold it stores. Holders can exchange receipts for Mint bars and coins, subject to minimums and fees.",
+  },
+};
+
+/** Why the table has no premium/discount column yet (decided 2026-10-10, docs/10). */
+export const PREMIUM_NOTE =
+  "No premium/discount column yet. For ordinary ETFs it stays close to zero, because large traders arbitrage it away. Our free price feed reports fund NAVs without a date, so a premium computed from it could be wrong. Dated NAVs from the issuers of the Sprott trust and the Mint receipts, where premiums can be meaningful, are planned.";
+
+/** Hover hints for the fund table's column headers. */
+export const VEHICLE_COLUMN_HINTS = {
+  fee: "Annual expense ratio: the share of your holding the fund charges each year.",
+  assets: "Total assets held by the fund, in its trading currency.",
+  traded: "Average value of shares traded per day over the last 30 sessions. Higher means easier to buy and sell at a tight price.",
+  redeem: "Whether ordinary unitholders can exchange units for physical metal.",
+};
+
+export const DEALER_NOTE =
+  "A short, curated list, not endorsements, and no affiliate links. Dealers charge a premium over the gold price when you buy and pay below it when you sell back; storage and insurance are up to you unless the dealer offers them.";
+
+/* ===========================================================================
+ * Companies page (/gold/companies) — docs/11-gold-companies.md
+ * ========================================================================= */
+
+export const COMPANIES_INTRO =
+  "Gold equities along the Lassonde curve — royalties, producers, developers, and explorers — plus miner ETFs for sector exposure. Open a ticker for mines, management, and how costs look at the company's gold-price assumption versus today's spot.";
+
+export const REPORTED_VS_SPOT_NOTE =
+  "Companies report AISC and often illustrate margins or NAV at a planning gold price. We store that assumption. Spot margin uses our latest gold futures close; assumption margin uses the company's price. We do not re-run a full NAV at spot yet.";
+
+export const TIER_TABS: { id: string; label: string; href: string }[] = [
+  { id: "all", label: "All", href: "/gold/companies" },
+  { id: "royalty", label: "Royalty & Streaming", href: "/gold/companies?tier=royalty" },
+  { id: "producer", label: "Producers", href: "/gold/companies?tier=producer" },
+  { id: "developer", label: "Developers", href: "/gold/companies?tier=developer" },
+  { id: "explorer", label: "Explorers", href: "/gold/companies?tier=explorer" },
+  { id: "miner_etf", label: "Miner ETFs", href: "/gold/companies?tier=miner_etf" },
+];
+
+export const DETAIL_TABS: { id: string; label: string }[] = [
+  { id: "overview", label: "Overview" },
+  { id: "management", label: "Management" },
+  { id: "mines", label: "Mines" },
+  { id: "sources", label: "Sources" },
+];
+
+export const ROLE_LABELS: Record<string, string> = {
+  ceo: "Chief Executive Officer",
+  cfo: "Chief Financial Officer",
+  coo: "Chief Operating Officer",
+  other: "Other",
+};
+
+export const SOURCE_KIND_LABELS: Record<string, string> = {
+  aif: "AIF / 40-F",
+  reserves: "Reserves & resources",
+  presentation: "Corporate presentation",
+  mda: "MD&A / results",
+  other: "Other",
+};
+
+export const MINE_STATUS_LABELS: Record<string, string> = {
+  operating: "Operating",
+  construction: "Construction",
+  development: "Development",
+  care_maintenance: "Care & maintenance",
+};
+
+export const COMPANY_COLUMN_HINTS = {
+  aisc: "All-in sustaining cost per ounce, as reported (company consolidated guidance).",
+  spotMargin: "Today's gold futures close minus reported AISC. Higher means more cash per ounce at spot.",
+  assumptionMargin: "Company planning gold price minus reported AISC.",
+  reserves: "Proven and probable gold reserves, million ounces.",
+  production: "Annual attributable production guidance, thousand ounces (midpoint when a range).",
+  reserveLife: "P&P reserves ÷ annual production.",
+  nav: "Curated company net asset value (million USD) at the gold price the source used.",
+};

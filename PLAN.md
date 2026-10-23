@@ -27,7 +27,7 @@ This document is the source of truth for the Gold Hub MVP dashboard. Earlier bra
 | Auth | Fully public; no login for MVP |
 | Disclaimer | One footer line (“not investment advice”); full legal pages later |
 | Seed data | Curated starter CSV during build; editable by hand |
-| Missing NAV | Show price always; show premium/discount only when `nav_per_share` is present |
+| Missing NAV | Show price always; show premium/discount only when `nav_per_share` is present. Only dated NAVs from the issuer count; Yahoo's NAV is undated and not stored (2026-10-10, `docs/10-gold-physical.md`) |
 | ETL runtime | Python scripts in `/scripts` (manual or cron / GitHub Action) — not inside Next.js requests |
 
 ---
@@ -293,8 +293,8 @@ Same header + simple dropdown; body: coming soon + CTA to Gold / Home.
 2. ~~Supabase schema — current + daily history tables + gold seed CSV~~ **Built (2026-10-01)** — see `docs/05-database-setup.md`
 3. Home `/` polish (content already scaffolded; iterate with design)
 4. ~~`/gold` overview — stats, TradingView, narrative, leaderboards~~ **Built (2026-10-08)** — see `docs/07-gold-overview.md`; stats/movers fill in once step 8 (ETL) runs
-5. `/gold/physical` — CA/US filter, metal ETF table, dealers, history chart
-6. `/gold/companies` — Lassonde tabs + Miner ETFs tab
+5. ~~`/gold/physical` — CA/US filter, metal ETF table, dealers~~ **Built (2026-10-10)** — see `docs/10-gold-physical.md`. History chart waits for dated issuer NAVs (PHYS, MNT)
+6. ~~`/gold/companies` — Lassonde tabs + Miner ETFs + company detail (mines)~~ **Built A–C (2026-10-23)** — see `docs/11-gold-companies.md`. Phase D (re-NAV at spot, Valuation tab) still open
 7. `/gold/[ticker]`
 8. ~~Daily Yahoo ETL — upsert current + insert history, volume + backfill~~ **Built (2026-10-09)** — `scripts/etl_yahoo.py`, see `docs/09-data-jobs.md`
 8b. ~~Gold Overview macro data — FRED, IMF fiscal, central bank reserves, scheduled jobs (doc 08 phases A–E)~~ **Built (2026-10-09)** — `/gold/why`, see `docs/08-gold-overview-data-plan.md` ("As built") and `docs/09-data-jobs.md`
