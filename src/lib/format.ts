@@ -20,6 +20,23 @@ export function formatPrice(value: Maybe<number>, currency = "USD", digits = 2):
   }).format(value);
 }
 
+/** 141_702_414_336 -> "$141.7B", 3_075_552_768 (CAD) -> "CA$3.1B", 7_200_000 -> "$7.2M". */
+export function formatCompactPrice(value: Maybe<number>, currency = "USD"): string {
+  if (value == null) return EMPTY;
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency,
+    notation: "compact",
+    maximumFractionDigits: 1,
+  }).format(value);
+}
+
+/** 0.004 -> "0.40%". For fractions stored in the database (expense ratios). */
+export function formatFractionPercent(value: Maybe<number>, digits = 2): string {
+  if (value == null) return EMPTY;
+  return `${(value * 100).toFixed(digits)}%`;
+}
+
 /** 1.234 -> "+1.23%", -0.5 -> "-0.50%". Values are already percents (1.25 = 1.25 %). */
 export function formatPercent(value: Maybe<number>, digits = 2): string {
   if (value == null) return EMPTY;

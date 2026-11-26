@@ -16,48 +16,7 @@
  *   data_refresh_log           when each script last ran      every script
  */
 
-import { createSupabaseServerClient } from "@/lib/supabase/server";
-
-type Client = ReturnType<typeof createSupabaseServerClient>;
-
-/** Run `work` with a client; log and return null on any failure. */
-async function safely<T>(label: string, work: (supabase: Client) => Promise<T>): Promise<T | null> {
-  try {
-    return await work(createSupabaseServerClient());
-  } catch (error) {
-    console.error(`[gold-macro] ${label} failed:`, error);
-    return null;
-  }
-}
-
-/** Throw on a Supabase error so `safely` logs it; otherwise return the rows. */
-function rowsOf<T>(result: { data: T[] | null; error: unknown }): T[] {
-  if (result.error) throw result.error;
-  return result.data ?? [];
-}
-
-/**
- * Supabase returns at most 1,000 rows per request. For long histories we ask for
- * rows 0–999, then 1000–1999, ... until a page comes back short.
- */
-const PAGE_SIZE = 1000;
-async function fetchAllPages<T>(
-  page: (from: number, to: number) => PromiseLike<{ data: T[] | null; error: unknown }>,
-): Promise<T[]> {
-  const all: T[] = [];
-  for (let from = 0; ; from += PAGE_SIZE) {
-    const rows = rowsOf(await page(from, from + PAGE_SIZE - 1));
-    all.push(...rows);
-    if (rows.length < PAGE_SIZE) return all;
-  }
-}
-
-function isoDaysAgo(days: number): string {
-  return new Date(Date.now() - days * 86_400_000).toISOString().slice(0, 10);
-}
-
-const average = (values: number[]) =>
-  values.length ? values.reduce((sum, value) => sum + value, 0) / values.length : null;
+import { average, type Client, fetchAllPages, isoDaysAgo, rowsOf, safely } from "./query-helpers";
 
 /* ===========================================================================
  * 1. Market cards: gold futures last close + GLD volume signal

@@ -14,6 +14,7 @@ WHAT USES IT
     - Volume signal:     vehicle_daily.volume for GLD (needs ~1 year of history -> backfill once)
     - Real-rates chart:  gold closes since 2003
     - Leaderboards:      companies.change_pct
+    - Physical page:     vehicles price, 1-day change, total assets (aum); vehicle_daily volume
 
 WHICH INSTRUMENTS
     Read from Supabase, not hard-coded: commodities.spot_symbol plus every active row in
@@ -150,8 +151,27 @@ def refresh_commodities(backfill: bool, now: str) -> int:
     return written
 
 
+def fund_assets(symbol: str) -> float | None:
+    """
+    Total assets of an ETF or trust (Yahoo `totalAssets`, in the listing currency).
+
+    We deliberately do NOT store Yahoo's `navPrice`: Yahoo gives no date for it, and
+    in testing (Oct 2026) it matched none of the last week's closes, so a premium
+    computed from it would be wrong. See docs/10-gold-physical.md.
+    """
+    try:
+        return clean(yf.Ticker(symbol).info.get("totalAssets"))
+    except Exception:  # Yahoo sometimes lacks this field or rate-limits
+        return None
+
+
 def refresh_instruments(
-    table: str, history_table: str, backfill: bool, now: str, with_market_cap: bool = False
+    table: str,
+    history_table: str,
+    backfill: bool,
+    now: str,
+    with_market_cap: bool = False,
+    with_fund_assets: bool = False,
 ) -> int:
     symbols = [row["symbol"] for row in select_rows(table, {"select": "symbol", "is_active": "eq.true"})]
     start = (
@@ -181,11 +201,21 @@ def refresh_instruments(
         }
         if with_market_cap:
             try:
-                market_cap = clean(yf.Ticker(symbol).fast_info.get("market_cap"))
+                info = yf.Ticker(symbol).fast_info
+                market_cap = clean(info.get("market_cap"))
+                if market_cap is None:
+                    shares = clean(info.get("shares"))
+                    px = current.get("market_price")
+                    if shares and px:
+                        market_cap = shares * px
             except Exception:  # Yahoo sometimes lacks this field
                 market_cap = None
             if market_cap:
                 current["market_cap"] = round(market_cap, 2)
+        if with_fund_assets:
+            assets = fund_assets(symbol)
+            if assets:  # keep the last known value when Yahoo has none today
+                current["aum"] = round(assets, 2)
         update_row(table, {"symbol": symbol}, current)
 
     written = upsert_in_batches(history_table, history_rows, on_conflict="symbol,as_of_date")
@@ -197,8 +227,8 @@ def refresh(backfill: bool) -> int:
     now = datetime.now(timezone.utc).isoformat()
     return (
         refresh_commodities(backfill, now)
-        + refresh_instruments("vehicles", "vehicle_daily", backfill, now)
-        + refresh_instruments("miner_etfs", "miner_etf_daily", backfill, now)
+        + refresh_instruments("vehicles", "vehicle_daily", backfill, now, with_fund_assets=True)
+        + refresh_instruments("miner_etfs", "miner_etf_daily", backfill, now, with_fund_assets=True)
         + refresh_instruments("companies", "company_daily", backfill, now, with_market_cap=True)
     )
 

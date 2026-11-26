@@ -36,6 +36,9 @@ jobs:
       - name: Yahoo prices (gold futures, ETFs, miners, companies)
         run: python scripts/etl_yahoo.py
 
+      - name: Company dual P/NAV (mine DCF / company proxy)
+        run: python scripts/compute_company_nav.py
+
       - name: FRED rates (real yield, nominal yield, breakeven inflation)
         if: always()  # run even if the Yahoo step failed
         run: python scripts/fetch_fred.py

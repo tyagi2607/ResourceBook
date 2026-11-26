@@ -6,6 +6,7 @@ Source of truth: the SQL files in `supabase/migrations/`, run in date order:
 | --- | --- |
 | `20261002000000_initial_schema.sql` | The 10 instrument tables below |
 | `20261009000000_gold_macro_data.sql` | Daily open/high/low/volume on `commodity_daily`, plus 5 macro and reference tables (see [Macro and reference tables](#macro-and-reference-tables)) |
+| `20261023000000_company_mines_detail.sql` | Producer fields on `companies`; `company_mines`, `company_people`, `company_sources` (see [doc 11](./11-gold-companies.md)) |
 
 This page explains every table in plain terms.
 
@@ -91,13 +92,29 @@ Funds that hold the **metal itself**.
 | `study_stage` | `PEA`, `PFS`, or `FS` (developers) |
 | `market_price`, `market_cap`, `change_pct`, `price_as_of` | ETL |
 | `aisc_per_oz`, `reserves_moz` | Producers (curated) |
+| `production_koz` | Annual attributable production guidance, thousand oz |
+| `aisc_gold_price_usd` | Planning gold price used with AISC / margin illustrations |
+| `cash_musd`, `debt_musd` | Balance sheet (curated) |
+| `nav_musd`, `nav_gold_price_usd`, `nav_as_of`, `nav_source` | Optional filing-reported NAV (legacy) |
+| `shares_outstanding_m`, `discount_rate`, `tax_rate` | DCF knobs (defaults 5% / 30%) |
+| `nav_baseline_musd`, `nav_close_musd`, `gold_baseline_usd`, `gold_close_usd`, `pnav_baseline`, `pnav_close`, `nav_computed_as_of`, `nav_method` | Dual computed NAV / P/NAV from daily mine DCF or company proxy |
 | `npv_5pct_musd`, `irr_pct`, `initial_capex_musd` | Developers (curated) |
 | `cash_runway_months`, `latest_assay` | Explorers (curated) |
 | `fundamentals_as_of`, `fundamentals_source` | Where/when fundamentals came from |
 | `metadata` | JSON for extras that don't deserve a column yet |
 
+Related tables (migration `20261023000000_company_mines_detail.sql`, see [doc 11](./11-gold-companies.md)):
+
+| Table | Role |
+| --- | --- |
+| `company_mines` | Per-mine production, AISC, P&P, `recoverable_reserves_koz`, ownership; rolls up on the detail page |
+| `company_nav_daily` | Daily dual NAV / P/NAV history per producer |
+| `company_people` | Management tab |
+| `company_sources` | Filing / IR links |
+
 Which metrics show per tier follows `PLAN.md`: royalty/producer → AISC and reserves;
 developer → NPV, IRR, capex, study stage; explorer → cash runway and latest assay.
+Spot AISC margin = latest gold futures close − AISC (computed in the app, not stored).
 
 ### `dealers` — physical bullion dealers (Physical page)
 
@@ -119,7 +136,7 @@ Deleting a parent row (e.g. a vehicle) deletes its history too (`on delete casca
 | `vehicle_daily` | `close_price`, `nav_per_share`, computed `premium_discount_pct`, `volume`, `source` |
 | `miner_etf_daily` | `close_price`, `volume`, `source` |
 | `company_daily` | `close_price`, `market_cap`, `volume`, `source` |
-| `company_fundamentals_history` | `aisc_per_oz`, `reserves_moz`, `npv_5pct_musd`, `irr_pct`, `cash_runway_months`, `source`. One row each time fundamentals are updated (roughly quarterly). |
+| `company_fundamentals_history` | `aisc_per_oz`, `reserves_moz`, `production_koz`, `aisc_gold_price_usd`, `nav_musd`, `nav_gold_price_usd`, `npv_5pct_musd`, `irr_pct`, `cash_runway_months`, `source`. One row each time fundamentals are updated (roughly quarterly). |
 
 Example: "average premium to NAV over time" for US gold vehicles is:
 

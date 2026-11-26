@@ -14,6 +14,7 @@ Load order matters: `commodities` first, because the other tables reference it
 from __future__ import annotations
 
 import csv
+import sys
 from pathlib import Path
 
 from supabase_rest import REPO_ROOT, count_rows, upsert_rows
@@ -21,12 +22,16 @@ from supabase_rest import REPO_ROOT, count_rows, upsert_rows
 SEED_DIR = REPO_ROOT / "data" / "seed"
 
 # (table, csv file, conflict key used to match existing rows)
+# Load order: commodities first (FK parent), then companies before mine/people/sources.
 SEED_TABLES = [
     ("commodities", "commodities.csv", "slug"),
     ("vehicles", "vehicles.csv", "symbol"),
     ("miner_etfs", "miner_etfs.csv", "symbol"),
     ("companies", "companies.csv", "symbol"),
     ("dealers", "dealers.csv", "name,country"),
+    ("company_mines", "company_mines.csv", "company_symbol,mine_slug"),
+    ("company_people", "company_people.csv", "company_symbol,role,name"),
+    ("company_sources", "company_sources.csv", "company_symbol,kind,url"),
 ]
 
 
@@ -38,8 +43,15 @@ def read_csv(path: Path) -> list[dict]:
     as text — Postgres converts them to the column's numeric type on insert.
     """
     with path.open(newline="", encoding="utf-8") as handle:
+        reader = csv.DictReader(handle)
         rows = []
-        for raw in csv.DictReader(handle):
+        for line_no, raw in enumerate(reader, start=2):
+            # Extra commas produce a list under key None — fail with a clear line number.
+            if None in raw:
+                sys.exit(
+                    f"{path.name} line {line_no}: too many fields "
+                    f"(extra={raw[None]!r}). Check commas / quoting."
+                )
             row = {}
             for column, value in raw.items():
                 value = (value or "").strip()
