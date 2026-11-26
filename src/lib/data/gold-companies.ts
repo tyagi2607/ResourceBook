@@ -9,6 +9,14 @@
  * Each function returns `null` on failure so the page can degrade by section.
  */
 
+import {
+  companyProxyMine,
+  computeCompanyNav,
+  DEFAULT_DISCOUNT_RATE,
+  DEFAULT_TAX_RATE,
+  mineNpvAtGold,
+  type MineDcfInput,
+} from "@/lib/valuation/mine-dcf";
 import { rowsOf, safely } from "./query-helpers";
 
 /* ===========================================================================
@@ -17,10 +25,10 @@ import { rowsOf, safely } from "./query-helpers";
 
 export type CompanyTier = "royalty" | "producer" | "developer" | "explorer";
 export type ScreenerTab = "all" | CompanyTier | "miner_etf";
-export type DetailTab = "overview" | "management" | "mines" | "sources";
+export type DetailTab = "overview" | "valuation" | "management" | "mines" | "sources";
 
 const SCREENER_TABS = new Set<string>(["all", "royalty", "producer", "developer", "explorer", "miner_etf"]);
-const DETAIL_TABS = new Set<string>(["overview", "management", "mines", "sources"]);
+const DETAIL_TABS = new Set<string>(["overview", "valuation", "management", "mines", "sources"]);
 
 /** `?tier=producer` -> producer; unknown / missing -> "all". */
 export function parseTier(value: string | string[] | undefined): ScreenerTab {
@@ -105,17 +113,36 @@ export type CompanyRow = {
   navGoldPriceUsd: number | null;
   navAsOf: string | null;
   fundamentalsAsOf: string | null;
+  fundamentalsSource: string | null;
+  sharesOutstandingM: number | null;
+  discountRate: number | null;
+  taxRate: number | null;
+  navBaselineMusd: number | null;
+  navCloseMusd: number | null;
+  goldBaselineUsd: number | null;
+  goldCloseUsd: number | null;
+  pnavBaseline: number | null;
+  pnavClose: number | null;
+  navComputedAsOf: string | null;
+  navMethod: string | null;
   /** Spot gold − AISC (filled when the page has spot). */
   spotMargin: number | null;
   /** Assumption gold − AISC. */
   assumptionMargin: number | null;
   reserveLife: number | null;
+  /** Legacy filing NAV P/NAV when present. */
   priceToNav: number | null;
+  primaryAsset: string | null;
+  npv5PctMusd: number | null;
+  irrPct: number | null;
+  initialCapexMusd: number | null;
+  cashRunwayMonths: number | null;
+  latestAssay: string | null;
 };
 
 // One literal string so supabase-js can type the rows (string `+` joins break that).
 const COMPANY_COLUMNS =
-  "symbol, ticker, name, tier, exchange, country, currency, jurisdiction_risk, study_stage, website, market_price, change_pct, market_cap, production_koz, aisc_per_oz, aisc_gold_price_usd, reserves_moz, cash_musd, debt_musd, nav_musd, nav_gold_price_usd, nav_as_of, fundamentals_as_of";
+  "symbol, ticker, name, tier, exchange, country, currency, jurisdiction_risk, study_stage, website, primary_asset, market_price, change_pct, market_cap, production_koz, aisc_per_oz, aisc_gold_price_usd, reserves_moz, cash_musd, debt_musd, nav_musd, nav_gold_price_usd, nav_as_of, fundamentals_as_of, fundamentals_source, shares_outstanding_m, discount_rate, tax_rate, nav_baseline_musd, nav_close_musd, gold_baseline_usd, gold_close_usd, pnav_baseline, pnav_close, nav_computed_as_of, nav_method, npv_5pct_musd, irr_pct, initial_capex_musd, cash_runway_months, latest_assay";
 
 type CompanyDb = {
   symbol: string;
@@ -128,6 +155,7 @@ type CompanyDb = {
   jurisdiction_risk: string | null;
   study_stage: string | null;
   website: string | null;
+  primary_asset: string | null;
   market_price: number | string | null;
   change_pct: number | string | null;
   market_cap: number | string | null;
@@ -141,6 +169,23 @@ type CompanyDb = {
   nav_gold_price_usd: number | string | null;
   nav_as_of: string | null;
   fundamentals_as_of: string | null;
+  fundamentals_source: string | null;
+  shares_outstanding_m: number | string | null;
+  discount_rate: number | string | null;
+  tax_rate: number | string | null;
+  nav_baseline_musd: number | string | null;
+  nav_close_musd: number | string | null;
+  gold_baseline_usd: number | string | null;
+  gold_close_usd: number | string | null;
+  pnav_baseline: number | string | null;
+  pnav_close: number | string | null;
+  nav_computed_as_of: string | null;
+  nav_method: string | null;
+  npv_5pct_musd: number | string | null;
+  irr_pct: number | string | null;
+  initial_capex_musd: number | string | null;
+  cash_runway_months: number | string | null;
+  latest_assay: string | null;
 };
 
 function mapCompany(row: CompanyDb, spot: number | null): CompanyRow {
@@ -150,6 +195,8 @@ function mapCompany(row: CompanyDb, spot: number | null): CompanyRow {
   const production = num(row.production_koz);
   const marketCap = num(row.market_cap);
   const nav = num(row.nav_musd);
+  const navClose = num(row.nav_close_musd);
+  const pnavClose = num(row.pnav_close);
   return {
     symbol: row.symbol,
     ticker: row.ticker,
@@ -174,11 +221,42 @@ function mapCompany(row: CompanyDb, spot: number | null): CompanyRow {
     navGoldPriceUsd: num(row.nav_gold_price_usd),
     navAsOf: row.nav_as_of,
     fundamentalsAsOf: row.fundamentals_as_of,
+    fundamentalsSource: row.fundamentals_source,
+    sharesOutstandingM: num(row.shares_outstanding_m),
+    discountRate: num(row.discount_rate),
+    taxRate: num(row.tax_rate),
+    navBaselineMusd: num(row.nav_baseline_musd),
+    navCloseMusd: navClose,
+    goldBaselineUsd: num(row.gold_baseline_usd),
+    goldCloseUsd: num(row.gold_close_usd),
+    pnavBaseline: num(row.pnav_baseline),
+    pnavClose,
+    navComputedAsOf: row.nav_computed_as_of,
+    navMethod: row.nav_method,
     spotMargin: aiscMargin(spot, aisc),
     assumptionMargin: aiscMargin(assumption, aisc),
     reserveLife: reserveLifeYears(reserves, production),
-    priceToNav: priceToNav(marketCap, nav),
+    priceToNav: pnavClose ?? priceToNav(marketCap, navClose ?? nav),
+    primaryAsset: row.primary_asset,
+    npv5PctMusd: num(row.npv_5pct_musd),
+    irrPct: num(row.irr_pct),
+    initialCapexMusd: num(row.initial_capex_musd),
+    cashRunwayMonths: num(row.cash_runway_months),
+    latestAssay: row.latest_assay,
   };
+}
+
+/** TradingView symbol for equity charts, e.g. NYSE:AEM. */
+export function tradingViewEquitySymbol(exchange: string, ticker: string): string {
+  const map: Record<string, string> = {
+    NYSE: "NYSE",
+    NASDAQ: "NASDAQ",
+    "NYSE American": "AMEX",
+    TSX: "TSX",
+    TSXV: "TSXV",
+  };
+  const prefix = map[exchange] ?? exchange;
+  return `${prefix}:${ticker}`;
 }
 
 /** Companies for the screener. `tier` null means all equity tiers (not miner ETFs). */
@@ -279,8 +357,12 @@ export type MineRow = {
   ownershipPct: number;
   productionKoz: number | null;
   aiscPerOz: number | null;
+  /** Resolved AISC used in DCF (mine or company fallback). */
+  effectiveAiscPerOz: number | null;
+  aiscIsCompanyFallback: boolean;
   aiscGoldPriceUsd: number | null;
   reservesPpMoz: number | null;
+  recoverableReservesKoz: number | null;
   resourcesMiMoz: number | null;
   asOf: string | null;
   sourceUrl: string | null;
@@ -290,6 +372,8 @@ export type MineRow = {
   attributableReservesMoz: number | null;
   spotMargin: number | null;
   assumptionMargin: number | null;
+  npvBaselineMusd: number | null;
+  npvCloseMusd: number | null;
 };
 
 export type PersonRow = {
@@ -320,6 +404,10 @@ export type CompanyDetail = {
   sources: SourceRow[];
   rollup: MineRollup;
   spot: { price: number; asOf: string } | null;
+  valuation: {
+    opsNpvBaselineMusd: number | null;
+    opsNpvCloseMusd: number | null;
+  };
 };
 
 function attributable(value: number | null, ownershipPct: number): number | null {
@@ -378,6 +466,7 @@ export async function getCompanyDetail(symbol: string): Promise<CompanyDetail | 
       aisc_per_oz: number | string | null;
       aisc_gold_price_usd: number | string | null;
       reserves_pp_moz: number | string | null;
+      recoverable_reserves_koz: number | string | null;
       resources_mi_moz: number | string | null;
       as_of: string | null;
       source_url: string | null;
@@ -386,7 +475,7 @@ export async function getCompanyDetail(symbol: string): Promise<CompanyDetail | 
       await supabase
         .from("company_mines")
         .select(
-          "mine_slug, name, country, region, status, ownership_pct, production_koz, aisc_per_oz, aisc_gold_price_usd, reserves_pp_moz, resources_mi_moz, as_of, source_url, notes",
+          "mine_slug, name, country, region, status, ownership_pct, production_koz, aisc_per_oz, aisc_gold_price_usd, reserves_pp_moz, recoverable_reserves_koz, resources_mi_moz, as_of, source_url, notes",
         )
         .eq("company_symbol", symbol)
         .eq("is_active", true)
@@ -419,12 +508,45 @@ export async function getCompanyDetail(symbol: string): Promise<CompanyDetail | 
         .order("sort_order"),
     );
 
+    const company = mapCompany(companyRow, spotPrice);
+    const companyAisc = company.aiscPerOz;
+    const discount = company.discountRate ?? DEFAULT_DISCOUNT_RATE;
+    const tax = company.taxRate ?? DEFAULT_TAX_RATE;
+    const goldBaseline = company.goldBaselineUsd;
+    const goldClose = company.goldCloseUsd ?? spotPrice;
+
+    const dcfMines: MineDcfInput[] = [];
     const mines: MineRow[] = mineRows.map((row) => {
       const ownership = Number(row.ownership_pct);
       const production = num(row.production_koz);
-      const aisc = num(row.aisc_per_oz);
+      const mineAisc = num(row.aisc_per_oz);
+      const aiscIsCompanyFallback = mineAisc == null && companyAisc != null;
+      const effectiveAisc = mineAisc ?? companyAisc;
       const assumption = num(row.aisc_gold_price_usd);
       const reserves = num(row.reserves_pp_moz);
+      const recoverable = num(row.recoverable_reserves_koz);
+      let npvBaseline: number | null = null;
+      let npvClose: number | null = null;
+      if (
+        production != null &&
+        production > 0 &&
+        recoverable != null &&
+        recoverable > 0 &&
+        effectiveAisc != null
+      ) {
+        const input: MineDcfInput = {
+          annualProductionOz: production * 1000 * (ownership / 100),
+          recoverableReservesKoz: recoverable * (ownership / 100),
+          aiscPerOz: effectiveAisc,
+        };
+        dcfMines.push(input);
+        if (goldBaseline != null) {
+          npvBaseline = mineNpvAtGold(input, goldBaseline, discount, tax).npvMusd;
+        }
+        if (goldClose != null) {
+          npvClose = mineNpvAtGold(input, goldClose, discount, tax).npvMusd;
+        }
+      }
       return {
         mineSlug: row.mine_slug,
         name: row.name,
@@ -433,22 +555,91 @@ export async function getCompanyDetail(symbol: string): Promise<CompanyDetail | 
         status: row.status,
         ownershipPct: ownership,
         productionKoz: production,
-        aiscPerOz: aisc,
+        aiscPerOz: mineAisc,
+        effectiveAiscPerOz: effectiveAisc,
+        aiscIsCompanyFallback,
         aiscGoldPriceUsd: assumption,
         reservesPpMoz: reserves,
+        recoverableReservesKoz: recoverable,
         resourcesMiMoz: num(row.resources_mi_moz),
         asOf: row.as_of,
         sourceUrl: row.source_url,
         notes: row.notes,
         attributableProductionKoz: attributable(production, ownership),
         attributableReservesMoz: attributable(reserves, ownership),
-        spotMargin: aiscMargin(spotPrice, aisc),
-        assumptionMargin: aiscMargin(assumption, aisc),
+        spotMargin: aiscMargin(spotPrice, effectiveAisc),
+        assumptionMargin: aiscMargin(assumption, effectiveAisc),
+        npvBaselineMusd: npvBaseline,
+        npvCloseMusd: npvClose,
       };
     });
 
+    let opsNpvBaseline: number | null = company.navBaselineMusd != null && company.cashMusd != null && company.debtMusd != null
+      ? company.navBaselineMusd - company.cashMusd + company.debtMusd
+      : null;
+    let opsNpvClose: number | null = company.navCloseMusd != null && company.cashMusd != null && company.debtMusd != null
+      ? company.navCloseMusd - company.cashMusd + company.debtMusd
+      : null;
+
+    if (dcfMines.length === 0 && company.tier === "producer") {
+      if (
+        company.productionKoz != null &&
+        company.reservesMoz != null &&
+        company.aiscPerOz != null &&
+        goldBaseline != null &&
+        goldClose != null
+      ) {
+        const proxy = [
+          companyProxyMine({
+            productionKoz: company.productionKoz,
+            reservesMoz: company.reservesMoz,
+            aiscPerOz: company.aiscPerOz,
+          }),
+        ];
+        opsNpvBaseline = computeCompanyNav({
+          mines: proxy,
+          cashMusd: 0,
+          debtMusd: 0,
+          goldPriceUsd: goldBaseline,
+          discountRate: discount,
+          taxRate: tax,
+        }).opsNpvMusd;
+        opsNpvClose = computeCompanyNav({
+          mines: proxy,
+          cashMusd: 0,
+          debtMusd: 0,
+          goldPriceUsd: goldClose,
+          discountRate: discount,
+          taxRate: tax,
+        }).opsNpvMusd;
+      }
+    } else if (dcfMines.length > 0) {
+      opsNpvBaseline =
+        goldBaseline != null
+          ? computeCompanyNav({
+              mines: dcfMines,
+              cashMusd: 0,
+              debtMusd: 0,
+              goldPriceUsd: goldBaseline,
+              discountRate: discount,
+              taxRate: tax,
+            }).opsNpvMusd
+          : opsNpvBaseline;
+      opsNpvClose =
+        goldClose != null
+          ? computeCompanyNav({
+              mines: dcfMines,
+              cashMusd: 0,
+              debtMusd: 0,
+              goldPriceUsd: goldClose,
+              discountRate: discount,
+              taxRate: tax,
+            }).opsNpvMusd
+          : opsNpvClose;
+    }
+
     return {
-      company: mapCompany(companyRow, spotPrice),
+      company,
       mines,
       people: peopleRows.map((row) => ({
         role: row.role,
@@ -464,6 +655,10 @@ export async function getCompanyDetail(symbol: string): Promise<CompanyDetail | 
       })),
       rollup: mineRollup(mines),
       spot,
+      valuation: {
+        opsNpvBaselineMusd: opsNpvBaseline,
+        opsNpvCloseMusd: opsNpvClose,
+      },
     };
   });
 }

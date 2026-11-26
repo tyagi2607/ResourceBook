@@ -18,7 +18,7 @@ import { MinerEtfTable } from "@/components/companies/MinerEtfTable";
 import { TierTabs } from "@/components/companies/TierTabs";
 import { PageSection as Section } from "@/components/ui/PageSection";
 import { SourceNote } from "@/components/ui/SourceNote";
-import { COMPANIES_INTRO, REPORTED_VS_SPOT_NOTE } from "@/content/gold";
+import { COMPANIES_INTRO, NAV_SCREENER_NOTE, REPORTED_VS_SPOT_NOTE } from "@/content/gold";
 import {
   getCompanies,
   getGoldSpotUsd,
@@ -51,8 +51,8 @@ export default async function GoldCompaniesPage({
         <TierTabs current={tier} />
         {spot && (
           <p className="text-sm text-muted">
-            Spot gold (futures close): {formatPrice(spot.price, "USD", 0)} · {formatDate(spot.asOf)}. Used for
-            spot AISC margins on the Producers view.
+            Gold close (GC=F): {formatPrice(spot.price, "USD", 0)} · {formatDate(spot.asOf)}. Used for close
+            AISC margins and P/NAV @ close.
           </p>
         )}
       </div>
@@ -81,12 +81,11 @@ async function EquitySection({
   // All + Producers show cost/reserve columns (blanks sort last for non-producers on All).
   const showProducerMetrics = tier === "all" || tier === "producer";
   const showDeveloperMetrics = tier === "developer";
-  const showNav = tier === "all" || tier === "producer" || tier === "developer";
 
   return (
     <Section
       title={tier === "all" ? "Equities" : "Companies"}
-      intro="Click a column to sort. Open a ticker for mines, management, and sources. Fundamentals are curated from filings; blanks mean not entered yet."
+      intro="Click a column to sort. Open a ticker for dual P/NAV, mines, and sources. Peer fundamentals marked provisional until Gemini/filings replace them."
     >
       {companies === null ? (
         <Unavailable what="Company data" />
@@ -98,20 +97,21 @@ async function EquitySection({
           showTier={tier === "all"}
           showProducerMetrics={showProducerMetrics}
           showDeveloperMetrics={showDeveloperMetrics}
-          showNav={showNav}
         />
       )}
       <SourceNote
         sources={[
-          { label: "Yahoo Finance (prices, market cap; delayed)" },
+          { label: "Yahoo Finance (prices, market cap, GC=F; delayed)" },
           {
             label:
-              "Company filings and IR materials, compiled by ResourceBook (AISC, reserves, production, NAV). Verify with the issuer",
+              "Company filings and IR materials, compiled by ResourceBook (AISC, reserves, production). Verify with the issuer",
           },
+          { label: "ResourceBook mine DCF (NAV / P/NAV at 3y avg and close)" },
         ]}
         updatedAt={updatedAt}
       >
-        <p>{REPORTED_VS_SPOT_NOTE}</p>
+        <p>{NAV_SCREENER_NOTE}</p>
+        <p className="mt-2">{REPORTED_VS_SPOT_NOTE}</p>
       </SourceNote>
     </Section>
   );

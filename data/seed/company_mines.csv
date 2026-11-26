@@ -1,9 +1,11 @@
-company_symbol,mine_slug,name,country,region,status,ownership_pct,production_koz,aisc_per_oz,aisc_gold_price_usd,reserves_pp_moz,resources_mi_moz,as_of,source_url,notes,sort_order,is_active
-AEM,detour-lake,Detour Lake,Canada,Ontario,operating,100,,,,,,2026-02-13,https://www.agnicoeagle.com/,Fill production AISC and P&P from AIF / reserve statement,10,true
-AEM,canadian-malartic,Canadian Malartic Complex,Canada,Quebec,operating,100,,,,,,2026-02-13,https://www.agnicoeagle.com/,Includes Odyssey underground ramp-up — verify attributable split,20,true
-AEM,macassa,Macassa,Canada,Ontario,operating,100,,,,,,2026-02-13,https://www.agnicoeagle.com/,,30,true
-AEM,fosterville,Fosterville,Australia,Victoria,operating,100,,,,,,2026-02-13,https://www.agnicoeagle.com/,,40,true
-AEM,laronde,LaRonde Complex,Canada,Quebec,operating,100,,,,,,2026-02-13,https://www.agnicoeagle.com/,,50,true
-AEM,meadowbank,Meadowbank Complex,Canada,Nunavut,operating,100,,,,,,2026-02-13,https://www.agnicoeagle.com/,Includes Amaruq,60,true
-AEM,kittila,Kittila,Finland,Lapland,operating,100,,,,,,2026-02-13,https://www.agnicoeagle.com/,,70,true
-AEM,pinos-altos,Pinos Altos,Mexico,Chihuahua,operating,100,,,,,,2026-02-13,https://www.agnicoeagle.com/,,80,true
+company_symbol,mine_slug,name,country,region,status,ownership_pct,production_koz,aisc_per_oz,aisc_gold_price_usd,reserves_pp_moz,recoverable_reserves_koz,resources_mi_moz,as_of,source_url,notes,sort_order,is_active
+AEM,laronde,LaRonde Complex,Canada,Quebec,operating,100,344.555,,,2.689,2689.401,,2025-12-31,https://s205.q4cdn.com/243646470/files/doc_financials/2026/AIF-2025.pdf,2025 payable oz; recoverable from Mine DCF (P&P x recovery). AISC blank → company 1339,10,true
+AEM,canadian-malartic,Canadian Malartic Complex,Canada,Quebec,operating,100,642.612,,,8.397,8396.518,,2025-12-31,https://s205.q4cdn.com/243646470/files/doc_financials/2026/AIF-2025.pdf,Includes Marban/Odyssey/East Gouldie recoverable grouping,20,true
+AEM,goldex,Goldex,Canada,Quebec,operating,100,125.501,,,0.762,762.086,,2025-12-31,https://s205.q4cdn.com/243646470/files/doc_financials/2026/AIF-2025.pdf,Includes Akasaba West,30,true
+AEM,detour-lake,Detour Lake,Canada,Ontario,operating,100,692.675,,,16.420,16420.300,,2025-12-31,https://s205.q4cdn.com/243646470/files/doc_financials/2026/AIF-2025.pdf,,40,true
+AEM,macassa,Macassa,Canada,Ontario,operating,100,312.729,,,2.101,2101.257,,2025-12-31,https://s205.q4cdn.com/243646470/files/doc_financials/2026/AIF-2025.pdf,Includes Near Surface and AK,50,true
+AEM,meliadine,Meliadine,Canada,Nunavut,operating,100,376.346,,,3.477,3477.120,,2025-12-31,https://s205.q4cdn.com/243646470/files/doc_financials/2026/AIF-2025.pdf,,60,true
+AEM,meadowbank,Meadowbank Complex,Canada,Nunavut,operating,100,493.314,,,1.316,1315.870,,2025-12-31,https://s205.q4cdn.com/243646470/files/doc_financials/2026/AIF-2025.pdf,Includes Amaruq,70,true
+AEM,fosterville,Fosterville,Australia,Victoria,operating,100,160.522,,,1.536,1536.400,,2025-12-31,https://s205.q4cdn.com/243646470/files/doc_financials/2026/AIF-2025.pdf,,80,true
+AEM,kittila,Kittila,Finland,Lapland,operating,100,217.379,,,2.854,2854.340,,2025-12-31,https://s205.q4cdn.com/243646470/files/doc_financials/2026/AIF-2025.pdf,,90,true
+AEM,pinos-altos,Pinos Altos,Mexico,Chihuahua,operating,100,81.734,,,0.253,253.080,,2025-12-31,https://s205.q4cdn.com/243646470/files/doc_financials/2026/AIF-2025.pdf,,100,true

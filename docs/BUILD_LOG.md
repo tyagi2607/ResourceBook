@@ -25,7 +25,7 @@ margins can be compared to today's spot. Template: Agnico Eagle (AEM). See
 
 - **You:** run the new migration in the Supabase SQL Editor, then re-seed
 - Fill AEM mine-level production / AISC / P&P from the reserve statement
-- Phase D: Valuation tab, re-NAV at spot
+- ~~Phase D: Valuation tab, re-NAV at spot~~ **Done 2026-11-26** — dual P/NAV (3y avg vs close), flat 30% tax, AEM mine DCF + NEM/B/KGC proxy, TradingView equity chart; migration `20261126000000_company_nav_dcf.sql` + `compute_company_nav.py`
 
 ---
 

@@ -12,7 +12,8 @@ only ever read the data; they never call these sources directly.
 | Script | Source | Writes to | Schedule | Run by hand |
 | --- | --- | --- | --- | --- |
 | `etl_yahoo.py` | Yahoo Finance (`yfinance`) | `commodity_daily`, `commodities` (price, 52-week range), `vehicle_daily`, `miner_etf_daily`, `company_daily`, and the current-price columns of `vehicles`, `miner_etfs`, `companies` (plus total assets, `aum`, for funds) | Weekdays 22:30 UTC | `python scripts\etl_yahoo.py` |
-| `fetch_fred.py` | FRED public CSV (DFII10, DGS10, T10YIE) | `macro_series`, `macro_observations` | Weekdays, right after Yahoo | `python scripts\fetch_fred.py` |
+| `compute_company_nav.py` | Gold closes + curated mines / fundamentals | `companies` dual NAV/P/NAV columns, `company_nav_daily` | Weekdays, right after Yahoo | `python scripts\compute_company_nav.py` |
+| `fetch_fred.py` | FRED public CSV (DFII10, DGS10, T10YIE) | `macro_series`, `macro_observations` | Weekdays, right after Yahoo (+ NAV) | `python scripts\fetch_fred.py` |
 | `fetch_imf_gold_reserves.py` | IMF IRFCL API (gold ounces, gold value, total reserves) | `central_bank_gold_reserves` (`source = 'imf'`) | 10th of each month, 09:00 UTC | `python scripts\fetch_imf_gold_reserves.py` |
 | `fetch_imf_fiscal.py` | IMF DataMapper API (debt, deficit, GDP) | `country_fiscal` | 10th of each month, after reserves | `python scripts\fetch_imf_fiscal.py` |
 | `load_manual_data.py` | Your CSV in `data/manual/` | The table named on the command line | Never (by hand only) | `python scripts\load_manual_data.py central_bank_gold_reserves` |
@@ -39,7 +40,7 @@ Each script ends by writing one row to `data_refresh_log`:
 
 | Column | Meaning |
 | --- | --- |
-| `job` | `yahoo_daily`, `fred`, `imf_gold_reserves`, `imf_fiscal`, or `manual_<table>` |
+| `job` | `yahoo_daily`, `company_nav_daily`, `fred`, `imf_gold_reserves`, `imf_fiscal`, or `manual_<table>` |
 | `ran_at` | When it finished |
 | `status` | `ok` or `error` |
 | `rows_written` | How many rows it upserted |
@@ -59,7 +60,7 @@ limit 20;
 
 Two workflow files in `.github/workflows/`:
 
-- `data-daily.yml`: Yahoo, then FRED. FRED runs even if Yahoo failed.
+- `data-daily.yml`: Yahoo, then company NAV, then FRED. FRED runs even if Yahoo failed.
 - `data-monthly.yml`: IMF reserves, then IMF fiscal.
 
 Both can also be started by hand: GitHub → the repo → **Actions** → pick the workflow →

@@ -294,7 +294,7 @@ Same header + simple dropdown; body: coming soon + CTA to Gold / Home.
 3. Home `/` polish (content already scaffolded; iterate with design)
 4. ~~`/gold` overview — stats, TradingView, narrative, leaderboards~~ **Built (2026-10-08)** — see `docs/07-gold-overview.md`; stats/movers fill in once step 8 (ETL) runs
 5. ~~`/gold/physical` — CA/US filter, metal ETF table, dealers~~ **Built (2026-10-10)** — see `docs/10-gold-physical.md`. History chart waits for dated issuer NAVs (PHYS, MNT)
-6. ~~`/gold/companies` — Lassonde tabs + Miner ETFs + company detail (mines)~~ **Built A–C (2026-10-23)** — see `docs/11-gold-companies.md`. Phase D (re-NAV at spot, Valuation tab) still open
+6. ~~`/gold/companies` — Lassonde tabs + Miner ETFs + company detail (mines + dual P/NAV)~~ **Built A–D (2026-11-26)** — see `docs/11-gold-companies.md`. Dual after-tax P/NAV at 3y avg vs gold close; AEM mine DCF; peer company-proxy; Valuation tab + TradingView chart
 7. `/gold/[ticker]`
 8. ~~Daily Yahoo ETL — upsert current + insert history, volume + backfill~~ **Built (2026-10-09)** — `scripts/etl_yahoo.py`, see `docs/09-data-jobs.md`
 8b. ~~Gold Overview macro data — FRED, IMF fiscal, central bank reserves, scheduled jobs (doc 08 phases A–E)~~ **Built (2026-10-09)** — `/gold/why`, see `docs/08-gold-overview-data-plan.md` ("As built") and `docs/09-data-jobs.md`

@@ -249,10 +249,19 @@ export const TIER_TABS: { id: string; label: string; href: string }[] = [
 
 export const DETAIL_TABS: { id: string; label: string }[] = [
   { id: "overview", label: "Overview" },
-  { id: "management", label: "Management" },
+  { id: "valuation", label: "Valuation" },
   { id: "mines", label: "Mines" },
+  { id: "management", label: "Management" },
   { id: "sources", label: "Sources" },
 ];
+
+/** Assets tab label by Lassonde tier (URL id stays `mines`). */
+export const ASSETS_TAB_LABEL: Record<string, string> = {
+  royalty: "Portfolio",
+  producer: "Mines",
+  developer: "Project",
+  explorer: "Properties",
+};
 
 export const ROLE_LABELS: Record<string, string> = {
   ceo: "Chief Executive Officer",
@@ -277,11 +286,19 @@ export const MINE_STATUS_LABELS: Record<string, string> = {
 };
 
 export const COMPANY_COLUMN_HINTS = {
-  aisc: "All-in sustaining cost per ounce, as reported (company consolidated guidance).",
-  spotMargin: "Today's gold futures close minus reported AISC. Higher means more cash per ounce at spot.",
+  aisc: "All-in sustaining cost per ounce, as reported (company consolidated).",
+  spotMargin: "Latest gold futures close minus reported AISC.",
   assumptionMargin: "Company planning gold price minus reported AISC.",
   reserves: "Proven and probable gold reserves, million ounces.",
-  production: "Annual attributable production guidance, thousand ounces (midpoint when a range).",
+  production: "Annual attributable production, thousand ounces.",
   reserveLife: "P&P reserves ÷ annual production.",
-  nav: "Curated company net asset value (million USD) at the gold price the source used.",
+  nav: "Computed NAV (million USD): sum of mine NPVs after flat 30% tax + cash − debt.",
+  pnavBaseline: "Market cap ÷ NAV at the trailing 3-year average gold close (GC=F).",
+  pnavClose: "Market cap ÷ NAV at yesterday's gold futures close. After-tax mine DCF at 5%.",
 };
+
+export const NAV_SCREENER_NOTE =
+  "Baseline = trailing 3-year average GC=F close. Close = latest daily gold close. NAV = sum of mine NPVs (5% discount, flat 30% tax) + cash − debt. Peer producers without mine breakouts use a company-level proxy (marked Provisional).";
+
+export const VALUATION_METHOD_NOTE =
+  "Simple producing-asset DCF: after-tax cash flow = (gold − AISC) × production × (1 − 30% tax), flat over reserve life, discounted at 5%. No sustaining capex, closure, inflation, or country tax table yet. Mine AISC blanks use company consolidated AISC.";

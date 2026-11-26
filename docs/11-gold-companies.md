@@ -1,8 +1,8 @@
 # 11 — Gold Companies page (`/gold/companies`)
 
-**Status:** Built 2026-10-23 (PLAN.md build step 6, phases A–C). Phase D (full re-NAV at spot, Valuation tab) is still open.
+**Status:** Phase D dual P/NAV (mine DCF) built 2026-11-26. Phases A–C remain (screener + detail shell).
 
-**Job (PLAN.md §4.4):** compare gold equities by Lassonde tier and miner ETFs, then open a ticker for mines, management, and filing sources. **Agnico Eagle (AEM)** is the first deep template.
+**Job (PLAN.md §4.4):** compare gold equities by Lassonde tier and miner ETFs, then open a ticker for dual P/NAV, mines, management, and filing sources. **Agnico Eagle (AEM)** is the deep mine-DCF template; **NEM / Barrick / Kinross** use provisional company-level proxy NAV until Gemini/filings upgrade them.
 
 ---
 
@@ -11,74 +11,82 @@
 | URL | What |
 | --- | --- |
 | `/gold/companies` | Screener (default tab: All) |
-| `/gold/companies?tier=producer` | One equity tier |
-| `/gold/companies?tier=miner_etf` | Miner ETFs (not physical gold) |
-| `/gold/companies/AEM` | Company detail, Overview tab |
-| `/gold/companies/AEM?tab=mines` | Mines tab |
+| `/gold/companies?tier=producer` | Producers with dual P/NAV columns |
+| `/gold/companies?tier=miner_etf` | Miner ETFs |
+| `/gold/companies/AEM` | Company detail, Overview |
+| `/gold/companies/AEM?tab=valuation` | Dual-deck NAV table |
+| `/gold/companies/AEM?tab=mines` | Mine NPVs |
 
 ---
 
-## Reported vs spot (core rule)
+## Dual P/NAV (hero metric)
 
-Companies report **AISC** (a cost) and often illustrate margins or **NAV** at a **planning gold price**. We store that assumption next to the figure:
+| Deck | Gold price | Meaning |
+| --- | --- | --- |
+| **Baseline** | Trailing **3-year average** of `commodity_daily` GC=F closes | Normalized / fair-value deck |
+| **Close** | Latest gold futures close (yesterday’s close after daily ETL) | Market deck |
 
-| Field | Meaning |
+**NAV** = sum of mine NPVs (after flat **30%** tax on cash flow, **5%** discount, flat life capped at 30 years) **+ cash − debt**.
+
+**P/NAV** = `market_cap / 1e6 / nav_musd`.
+
+| Method | When |
 | --- | --- |
-| `aisc_per_oz` | Reported consolidated AISC |
-| `aisc_gold_price_usd` | Gold price the company used in guidance / outlook slides |
-| Spot margin | `latest gold futures close − aisc_per_oz` |
-| Assumption margin | `aisc_gold_price_usd − aisc_per_oz` |
-| `nav_musd` + `nav_gold_price_usd` | Curated NAV at the source's gold price |
+| `mine_dcf_v1` | Mine rows have production + recoverable reserves (AEM) |
+| `company_proxy_v1` | No mine DCF inputs; uses consolidated production, AISC, reserves as one synthetic mine (NEM/B/KGC) |
 
-We **do not** recompute a full NAV at spot in this phase. Overview only labels the gold-price gap (assumption vs spot).
+Blank mine AISC → **company consolidated AISC**. Filing reserve metal prices are context only, not the hero baseline.
 
----
-
-## Screener columns
-
-**Producers / All (cost columns):** ticker, price, 1 day, market cap, AISC (with assumption sub-line), spot margin, production (koz), P&P (Moz), reserve life, jurisdiction; NAV / P/NAV when present.
-
-**Developers:** study stage, jurisdiction (no AISC).
-
-**Royalty / Explorers:** market columns + jurisdiction.
-
-**Miner ETFs:** price, assets, fee, holdings blurb — no AISC.
-
-Default sort: AISC ascending on producer views; market cap descending otherwise. Empty values sort last.
+Recompute: `scripts/compute_company_nav.py` after `etl_yahoo.py` (weekday Actions workflow). Not live per-minute.
 
 ---
 
-## Detail tabs
+## Screener columns (producers)
 
-1. **Overview** — headline cards, ReportedVsSpot for AISC, optional cash/debt/NAV, mine rollup check  
-2. **Management** — `company_people`  
-3. **Mines** — per-mine cards; company consolidated line at top  
-4. **Sources** — `company_sources` (AIF, reserves, presentation, MD&A, …)
+Ticker · **P/NAV @ 3y** · **P/NAV @ close** · AISC · close margin · prod · P&P · reserve life · price · 1 day · market cap · jurisdiction.
 
-### Mine rollup rules
+Default sort: P/NAV @ close ascending. Provisional peers show a “Provisional proxy” sub-line.
 
-- Attributable production / P&P = mine value × `ownership_pct` / 100, then sum  
-- Weighted AISC = production-weighted average of mine AISCs (cross-check only)  
-- **Screener AISC** always uses the **company consolidated** figure
+---
+
+## Detail tabs (one shell, tier-swapped)
+
+1. **Overview** — dual P/NAV hero (producers), tier metric grid, AISC reported-vs-close, NAV bridge  
+2. **Valuation** — dual-deck table (producers); study NPV (developers); cash/runway (explorers); stub (royalty)  
+3. **Assets** — labeled Mines / Portfolio / Project / Properties by tier (`?tab=mines`)  
+4. **Management** — `company_people`  
+5. **Sources** — `company_sources`
+
+TradingView equity chart sits under the tabs on every detail view (display-only).
+
+---
+
+## Sourcing ladder
+
+**API / structured feed first → company filings / IR if the API does not expose it.** TradingView is embed-only (not written to Supabase).
+
+| Input | Preferred | Fallback |
+| --- | --- | --- |
+| Gold close / 3y avg | Yahoo `GC=F` → `commodity_daily` | — |
+| Equity price / mkt cap | Yahoo ETL | — |
+| Shares / cash / debt | Yahoo / SEC XBRL when automated | Results release / AIF |
+| AISC, mine koz, P&P | — | AIF / MD&A / results (curated CSV) |
+| NAV / P/NAV | Computed daily | — |
 
 ---
 
 ## Schema
 
-Migration: [`supabase/migrations/20261023000000_company_mines_detail.sql`](../supabase/migrations/20261023000000_company_mines_detail.sql)
+Migrations:
 
-| Table | Role |
-| --- | --- |
-| `companies` (+ columns) | Screener + company rollup fields |
-| `company_mines` | One row per mine (`company_symbol`, `mine_slug`) |
-| `company_people` | Management |
-| `company_sources` | Filing links |
+- [`20261023000000_company_mines_detail.sql`](../supabase/migrations/20261023000000_company_mines_detail.sql) — mines / people / sources  
+- [`20261126000000_company_nav_dcf.sql`](../supabase/migrations/20261126000000_company_nav_dcf.sql) — recoverable koz, tax/discount, dual NAV columns, `company_nav_daily`
 
-### Apply the migration
+### Apply the new migration
 
-1. Supabase Dashboard → **SQL Editor** → New query  
-2. Paste the whole migration file → Run  
-3. From the repo root: `.venv\Scripts\python.exe scripts\seed_database.py`
+1. Supabase Dashboard → **SQL Editor** → paste `20261126000000_company_nav_dcf.sql` → Run  
+2. From repo root: `.venv\Scripts\python.exe scripts\seed_database.py`  
+3. `.venv\Scripts\python.exe scripts\compute_company_nav.py` (needs gold history + market caps from Yahoo)
 
 ---
 
@@ -86,12 +94,10 @@ Migration: [`supabase/migrations/20261023000000_company_mines_detail.sql`](../su
 
 | File | Notes |
 | --- | --- |
-| `data/seed/companies.csv` | New producer columns; AEM filled with midpoints (verify) |
-| `data/seed/company_mines.csv` | AEM mine shells (fill koz / AISC / P&P from filings) |
-| `data/seed/company_people.csv` | AEM CEO / CFO (verify tenure) |
-| `data/seed/company_sources.csv` | Links from Notion Agnico research |
-
-Blank CSV cells become NULL and **overwrite** prior DB values on re-seed.
+| `data/seed/companies.csv` | AEM deep fundamentals; NEM/B/KGC provisional proxy fields |
+| `data/seed/company_mines.csv` | AEM 10 producing mines (prod + recoverable; AISC blank → company) |
+| `data/seed/company_people.csv` | AEM management |
+| `data/seed/company_sources.csv` | AEM + peer IR / SEC links |
 
 ---
 
@@ -99,27 +105,17 @@ Blank CSV cells become NULL and **overwrite** prior DB values on re-seed.
 
 | File | Role |
 | --- | --- |
-| `src/app/gold/companies/page.tsx` | Screener |
-| `src/app/gold/companies/[ticker]/page.tsx` | Detail |
-| `src/lib/data/gold-companies.ts` | Queries, rollups, parsers |
-| `src/components/companies/*` | Tabs, tables, ReportedVsSpot |
-| `src/content/gold.ts` | Wording |
+| `src/lib/valuation/mine-dcf.ts` | Pure DCF (TS) |
+| `scripts/mine_dcf.py` / `compute_company_nav.py` | Daily NAV job |
+| `src/lib/data/gold-companies.ts` | Screener + detail queries |
+| `src/app/gold/companies/*` | UI |
+| `src/components/companies/*` | Table, tabs, ReportedVsSpot |
 
 ---
 
-## How to add another producer (deep)
+## Still open
 
-1. Ensure the company row exists in `companies.csv`  
-2. Add mine rows to `company_mines.csv`  
-3. Add people / sources CSVs  
-4. Fill consolidated AISC, `aisc_gold_price_usd`, production, reserves  
-5. Re-run `seed_database.py`  
-
----
-
-## Still open (Phase D+)
-
-- Valuation tab and peer P/NAV bands  
-- Re-NAV / mine DCF at spot  
-- Gemini extraction from PDFs into the same tables  
-- Fill mine-level koz / AISC / P&P for AEM from the reserve statement  
+- Country/region tax table (replace flat 30%)  
+- Development projects / equity stakes in NAV  
+- Gemini PDF extraction to replace provisional peer rows  
+- After-tax vs effective tax refinements; CAD/USD for non-USD listings  

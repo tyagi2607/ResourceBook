@@ -4,3 +4,10 @@ AEM,reserves,Q4 2025 Exploration / Reserves news release,https://s205.q4cdn.com/
 AEM,presentation,Corporate Update August 2026,https://s205.q4cdn.com/243646470/files/doc_presentation/2026/AEM-Corporate-Update-August-2026.pdf,2026-08-01,30
 AEM,mda,Q2 2026 results news release,https://s205.q4cdn.com/243646470/files/doc_news/2026/_AEM-News-Release-Q2-2026-FINAL.pdf,2026-07-01,40
 AEM,other,Q4 2025 / 2026 guidance news release,https://s205.q4cdn.com/243646470/files/doc_news/2026/AEM-News-Release-Q4-2025-FINAL.pdf,2026-02-13,50
+AEM,other,SEC EDGAR companyfacts (CIK 0000002809),https://data.sec.gov/api/xbrl/companyfacts/CIK0000002809.json,2025-12-31,60
+NEM,mda,FY2025 results and 2026 guidance,https://www.newmont.com/investors/news-release/news-details/2026/Newmont-Reports-Fourth-Quarter-and-Full-Year-2025-Results-Provides-2026-Guidance-and-Announces-Enhanced-Capital-Allocation-Framework/default.aspx,2025-12-31,10
+NEM,reserves,2025 mineral reserves release,https://www.newmont.com/investors/news-release/news-details/2026/Newmont-Reports-2025-Mineral-Reserves-of-118-2-Million-Gold-Ounces-and-12-5-Million-Tonnes-of-Copper/default.aspx,2025-12-31,20
+NEM,other,SEC Form 10-K 2025,https://www.sec.gov/Archives/edgar/data/1164727/000116472726000010/nem-20251231.htm,2025-12-31,30
+B,mda,FY2025 / Q4 2025 results,https://www.barrick.com/English/news/news-details/2026/q4-2025-results/default.aspx,2025-12-31,10
+B,other,Barrick Annual Report 2025 (SEC exhibit),https://www.sec.gov/Archives/edgar/data/756894/000119312526079280/d16658dex991.pdf,2025-12-31,20
+KGC,mda,FY2025 / Q4 2025 results,https://www.kinross.com/news-and-investors/news-releases/press-release-details/2026/Kinross-reports-2025-fourth-quarter-and-full-year-results/default.aspx,2025-12-31,10

@@ -1,18 +1,30 @@
 /**
- * DetailTabs — Overview | Management | Mines | Sources on a company page.
+ * DetailTabs — Overview | Valuation | Assets | Management | Sources.
+ * Assets label varies by tier; URL id stays `mines`.
  */
 
 import Link from "next/link";
-import { DETAIL_TABS } from "@/content/gold";
-import type { DetailTab } from "@/lib/data/gold-companies";
+import { ASSETS_TAB_LABEL, DETAIL_TABS } from "@/content/gold";
+import type { CompanyTier, DetailTab } from "@/lib/data/gold-companies";
 
-export function DetailTabs({ symbol, current }: { symbol: string; current: DetailTab }) {
+export function DetailTabs({
+  symbol,
+  current,
+  tier,
+}: {
+  symbol: string;
+  current: DetailTab;
+  tier: CompanyTier;
+}) {
   const base = `/gold/companies/${encodeURIComponent(symbol)}`;
+  const assetsLabel = ASSETS_TAB_LABEL[tier] ?? "Mines";
+
   return (
     <nav aria-label="Company sections" className="flex flex-wrap gap-2 border-b border-border pb-3">
       {DETAIL_TABS.map((tab) => {
         const active = tab.id === current;
         const href = tab.id === "overview" ? base : `${base}?tab=${tab.id}`;
+        const label = tab.id === "mines" ? assetsLabel : tab.label;
         return (
           <Link
             key={tab.id}
@@ -25,7 +37,7 @@ export function DetailTabs({ symbol, current }: { symbol: string; current: Detai
                 : "text-zinc-600 hover:text-accent-fg dark:text-zinc-400"
             }`}
           >
-            {tab.label}
+            {label}
           </Link>
         );
       })}
