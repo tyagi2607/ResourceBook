@@ -201,7 +201,13 @@ def refresh_instruments(
         }
         if with_market_cap:
             try:
-                market_cap = clean(yf.Ticker(symbol).fast_info.get("market_cap"))
+                info = yf.Ticker(symbol).fast_info
+                market_cap = clean(info.get("market_cap"))
+                if market_cap is None:
+                    shares = clean(info.get("shares"))
+                    px = current.get("market_price")
+                    if shares and px:
+                        market_cap = shares * px
             except Exception:  # Yahoo sometimes lacks this field
                 market_cap = None
             if market_cap:
